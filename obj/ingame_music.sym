@@ -1,0 +1,75 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 1.
+Hexadecimal [24-Bits]
+
+Symbol Table
+
+    .__.$$$.                                                    =  002710 L
+    .__.ABS.                                                    =  000000 G
+    .__.CPU.                                                    =  000000 L
+    .__.H$L.                                                    =  000000 L
+  0 Fingame_music$P0$0_0$0                                      =  000001 GR
+  0 Fingame_music$P1$0_0$0                                      =  0000C1 GR
+  0 Fingame_music$P11$0_0$0                                     =  000601 GR
+  0 Fingame_music$P12$0_0$0                                     =  0006C1 GR
+  0 Fingame_music$P13$0_0$0                                     =  000781 GR
+  0 Fingame_music$P14$0_0$0                                     =  000841 GR
+  0 Fingame_music$P15$0_0$0                                     =  000901 GR
+  0 Fingame_music$P16$0_0$0                                     =  0009C1 GR
+  0 Fingame_music$P17$0_0$0                                     =  000A81 GR
+  0 Fingame_music$P2$0_0$0                                      =  000181 GR
+  0 Fingame_music$P3$0_0$0                                      =  000241 GR
+  0 Fingame_music$P4$0_0$0                                      =  000301 GR
+  0 Fingame_music$P5$0_0$0                                      =  0003C1 GR
+  0 Fingame_music$P6$0_0$0                                      =  000481 GR
+  0 Fingame_music$P8$0_0$0                                      =  000541 GR
+  0 Fingame_music$duty_instruments$0_0$0                        =  000BA1 GR
+  0 Fingame_music$noise_instruments$0_0$0                       =  000C19 GR
+  0 Fingame_music$order1$0_0$0                                  =  000B41 GR
+  0 Fingame_music$order2$0_0$0                                  =  000B59 GR
+  0 Fingame_music$order3$0_0$0                                  =  000B71 GR
+  0 Fingame_music$order4$0_0$0                                  =  000B89 GR
+  0 Fingame_music$order_cnt$0_0$0                               =  000000 GR
+  0 Fingame_music$wave_instruments$0_0$0                        =  000BDD GR
+  0 Fingame_music$waves$0_0$0                                   =  000C91 GR
+  0 G$ingame_track$0_0$0                                        =  000D91 GR
+  0 _P0                                                            000001 R
+  0 _P1                                                            0000C1 R
+  0 _P11                                                           000601 R
+  0 _P12                                                           0006C1 R
+  0 _P13                                                           000781 R
+  0 _P14                                                           000841 R
+  0 _P15                                                           000901 R
+  0 _P16                                                           0009C1 R
+  0 _P17                                                           000A81 R
+  0 _P2                                                            000181 R
+  0 _P3                                                            000241 R
+  0 _P4                                                            000301 R
+  0 _P5                                                            0003C1 R
+  0 _P6                                                            000481 R
+  0 _P8                                                            000541 R
+  0 _duty_instruments                                              000BA1 R
+  0 _ingame_track                                                  000D91 GR
+  0 _noise_instruments                                             000C19 R
+  0 _order1                                                        000B41 R
+  0 _order2                                                        000B59 R
+  0 _order3                                                        000B71 R
+  0 _order4                                                        000B89 R
+  0 _order_cnt                                                     000000 R
+  0 _wave_instruments                                              000BDD R
+  0 _waves                                                         000C91 R
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 2.
+Hexadecimal [24-Bits]
+
+Area Table
+
+   0 _CODE                                      size    DA6   flags    0
+   1 _DATA                                      size      0   flags    0
+   2 _INITIALIZED                               size      0   flags    0
+   3 _DABS                                      size      0   flags    8
+   4 _HOME                                      size      0   flags    0
+   5 _GSINIT                                    size      0   flags    0
+   6 _GSFINAL                                   size      0   flags    0
+   7 _INITIALIZER                               size      0   flags    0
+   8 _CABS                                      size      0   flags    8
+

@@ -1,0 +1,18 @@
+{
+    "files.associations": {
+        "dungeon_tiles.h": "c",
+        "stdint.h": "c",
+        "gb.h": "c",
+        "dungeon_map.h": "c",
+        "simple_snake_tiles.h": "c",
+        "simple_snake_map.h": "c",
+        "tetris_box_a.h": "c",
+        "tetris_box_tilest.h": "c",
+        "simple_snake_map_co.h": "c",
+        "snake_bg_tiles.h": "c",
+        "font.h": "c",
+        "stddef.h": "c",
+        "drawing.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
+}

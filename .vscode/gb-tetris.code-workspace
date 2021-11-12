@@ -1,0 +1,25 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"**.h": "c",
+			"dungeon_tiles.h": "c",
+			"gb.h": "c",
+			"rain_drop.h": "c",
+			"drawing.h": "c",
+			"limits": "c",
+			"*.tcc": "c",
+			"type_traits": "c",
+			"dungeon_map.h": "c",
+			"time.h": "c",
+			"font.h": "c",
+			"stdint.h": "c",
+			"tetris_box_tilest.h": "c",
+			"tetris_box.h": "c"
+		}
+	}
+}

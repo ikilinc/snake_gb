@@ -1,0 +1,107 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 1.
+Hexadecimal [24-Bits]
+
+Symbol Table
+
+    .__.$$$.                                                    =  002710 L
+    .__.ABS.                                                    =  000000 G
+    .__.CPU.                                                    =  000000 L
+    .__.H$L.                                                    =  000000 L
+  0 A$snake_logic$102                                              000032 GR
+  0 A$snake_logic$105                                              000034 GR
+  0 A$snake_logic$106                                              000035 GR
+  0 A$snake_logic$107                                              000036 GR
+  0 A$snake_logic$108                                              000037 GR
+  0 A$snake_logic$109                                              000038 GR
+  0 A$snake_logic$110                                              000039 GR
+  0 A$snake_logic$111                                              00003A GR
+  0 A$snake_logic$112                                              00003B GR
+  0 A$snake_logic$113                                              00003C GR
+  0 A$snake_logic$120                                              00003D GR
+  0 A$snake_logic$121                                              00003F GR
+  0 A$snake_logic$124                                              000041 GR
+  0 A$snake_logic$125                                              000042 GR
+  0 A$snake_logic$128                                              000043 GR
+  0 A$snake_logic$129                                              000044 GR
+  0 A$snake_logic$133                                              000046 GR
+  0 A$snake_logic$134                                              000049 GR
+  0 A$snake_logic$135                                              00004A GR
+  0 A$snake_logic$136                                              00004B GR
+  0 A$snake_logic$137                                              00004E GR
+  0 A$snake_logic$138                                              000050 GR
+  0 A$snake_logic$139                                              000051 GR
+  0 A$snake_logic$140                                              000054 GR
+  0 A$snake_logic$141                                              000055 GR
+  0 A$snake_logic$142                                              000056 GR
+  0 A$snake_logic$143                                              000057 GR
+  0 A$snake_logic$144                                              00005A GR
+  0 A$snake_logic$149                                              00005C GR
+  0 A$snake_logic$150                                              00005D GR
+  0 A$snake_logic$155                                              00005E GR
+  0 A$snake_logic$57                                               000000 GR
+  0 A$snake_logic$58                                               000001 GR
+  0 A$snake_logic$62                                               000002 GR
+  0 A$snake_logic$63                                               000005 GR
+  0 A$snake_logic$64                                               000007 GR
+  0 A$snake_logic$68                                               000009 GR
+  0 A$snake_logic$73                                               00000B GR
+  0 A$snake_logic$74                                               00000C GR
+  0 A$snake_logic$75                                               00000D GR
+  0 A$snake_logic$76                                               000010 GR
+  0 A$snake_logic$80                                               000011 GR
+  0 A$snake_logic$81                                               000014 GR
+  0 A$snake_logic$82                                               000015 GR
+  0 A$snake_logic$83                                               000016 GR
+  0 A$snake_logic$84                                               000018 GR
+  0 A$snake_logic$85                                               00001B GR
+  0 A$snake_logic$86                                               00001C GR
+  0 A$snake_logic$87                                               00001D GR
+  0 A$snake_logic$88                                               00001E GR
+  0 A$snake_logic$89                                               00001F GR
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 2.
+Hexadecimal [24-Bits]
+
+Symbol Table
+
+  0 A$snake_logic$90                                               000020 GR
+  0 A$snake_logic$91                                               000023 GR
+  0 A$snake_logic$93                                               000025 GR
+  0 A$snake_logic$94                                               000028 GR
+  0 A$snake_logic$95                                               000029 GR
+  0 A$snake_logic$96                                               00002C GR
+  0 A$snake_logic$98                                               00002E GR
+  0 A$snake_logic$99                                               00002F GR
+  0 C$snake_logic.c$11$2_0$90                                   =  000009 GR
+  0 C$snake_logic.c$14$1_0$89                                   =  00000B GR
+  0 C$snake_logic.c$16$1_0$89                                   =  000011 GR
+  0 C$snake_logic.c$20$1_1$91                                   =  00003D GR
+  0 C$snake_logic.c$21$1_1$91                                   =  00003D GR
+  0 C$snake_logic.c$22$1_1$91                                   =  000046 GR
+  0 C$snake_logic.c$23$1_1$89                                   =  00005E GR
+  0 C$snake_logic.c$6$0_0$89                                    =  000000 GR
+  0 C$snake_logic.c$9$1_0$89                                    =  000002 GR
+  0 G$enlargeSnake$0$0                                          =  000000 GR
+  1 G$snake$0_0$0                                               =  000000 GR
+  0 XG$enlargeSnake$0$0                                         =  00005E GR
+    _SimpleSnakeTiles                                              ****** GX
+    ___memcpy                                                      ****** GX
+  0 _enlargeSnake                                                  000000 GR
+    _set_sprite_data                                               ****** GX
+    _shadow_OAM                                                    ****** GX
+  1 _snake                                                         000000 GR
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 3.
+Hexadecimal [24-Bits]
+
+Area Table
+
+   0 _CODE                                      size     5F   flags    0
+   1 _DATA                                      size     56   flags    0
+   2 _INITIALIZED                               size      0   flags    0
+   3 _DABS                                      size      0   flags    8
+   4 _HOME                                      size      0   flags    0
+   5 _GSINIT                                    size      0   flags    0
+   6 _GSFINAL                                   size      0   flags    0
+   7 _INITIALIZER                               size      0   flags    0
+   8 _CABS                                      size      0   flags    8
+

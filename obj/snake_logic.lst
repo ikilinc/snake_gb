@@ -1,0 +1,158 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ANSI-C Compiler
+                                      3 ; Version 4.1.6 #12539 (Linux)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module snake_logic
+                                      6 	.optsdcc -mgbz80
+                                      7 	
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _set_sprite_data
+                                     12 	.globl _snake
+                                     13 	.globl _enlargeSnake
+                                     14 ;--------------------------------------------------------
+                                     15 ; special function registers
+                                     16 ;--------------------------------------------------------
+                                     17 ;--------------------------------------------------------
+                                     18 ; ram data
+                                     19 ;--------------------------------------------------------
+                                     20 	.area _DATA
+                           000000    21 G$snake$0_0$0==.
+      000000                         22 _snake::
+      000000                         23 	.ds 86
+                                     24 ;--------------------------------------------------------
+                                     25 ; ram data
+                                     26 ;--------------------------------------------------------
+                                     27 	.area _INITIALIZED
+                                     28 ;--------------------------------------------------------
+                                     29 ; absolute external ram data
+                                     30 ;--------------------------------------------------------
+                                     31 	.area _DABS (ABS)
+                                     32 ;--------------------------------------------------------
+                                     33 ; global & static initialisations
+                                     34 ;--------------------------------------------------------
+                                     35 	.area _HOME
+                                     36 	.area _GSINIT
+                                     37 	.area _GSFINAL
+                                     38 	.area _GSINIT
+                                     39 ;--------------------------------------------------------
+                                     40 ; Home
+                                     41 ;--------------------------------------------------------
+                                     42 	.area _HOME
+                                     43 	.area _HOME
+                                     44 ;--------------------------------------------------------
+                                     45 ; code
+                                     46 ;--------------------------------------------------------
+                                     47 	.area _CODE
+                           000000    48 	G$enlargeSnake$0$0	= .
+                                     49 	.globl	G$enlargeSnake$0$0
+                           000000    50 	C$snake_logic.c$6$0_0$89	= .
+                                     51 	.globl	C$snake_logic.c$6$0_0$89
+                                     52 ;src/snake_logic.c:6: void enlargeSnake()
+                                     53 ;	---------------------------------
+                                     54 ; Function enlargeSnake
+                                     55 ; ---------------------------------
+      000000                         56 _enlargeSnake::
+      000000 3B                      57 	dec	sp
+      000001 3B                      58 	dec	sp
+                           000002    59 	C$snake_logic.c$9$1_0$89	= .
+                                     60 	.globl	C$snake_logic.c$9$1_0$89
+                                     61 ;src/snake_logic.c:9: if (snake.tailLength == 30)
+      000002 FAr55r00                62 	ld	a, (#(_snake + 85) + 0)
+      000005 FE 1E                   63 	cp	a, #0x1e
+      000007 28 53                   64 	jr	Z, 00104$
+                           000009    65 	C$snake_logic.c$11$2_0$90	= .
+                                     66 	.globl	C$snake_logic.c$11$2_0$90
+                                     67 ;src/snake_logic.c:11: return;
+      000009 18 00                   68 	jr	00102$
+      00000B                         69 00102$:
+                           00000B    70 	C$snake_logic.c$14$1_0$89	= .
+                                     71 	.globl	C$snake_logic.c$14$1_0$89
+                                     72 ;src/snake_logic.c:14: snake.tailLength++;
+      00000B 4F                      73 	ld	c, a
+      00000C 0C                      74 	inc	c
+      00000D 21r55r00                75 	ld	hl, #(_snake + 85)
+      000010 71                      76 	ld	(hl), c
+                           000011    77 	C$snake_logic.c$16$1_0$89	= .
+                                     78 	.globl	C$snake_logic.c$16$1_0$89
+                                     79 ;src/snake_logic.c:16: set_sprite_data(snake.tailLength + 6u, snake.lastUsedTailIndex, SimpleSnakeTiles);
+      000011 21r54r00                80 	ld	hl, #(_snake + 84)
+      000014 46                      81 	ld	b, (hl)
+      000015 79                      82 	ld	a, c
+      000016 C6 06                   83 	add	a, #0x06
+      000018 11r00r00                84 	ld	de, #_SimpleSnakeTiles
+      00001B D5                      85 	push	de
+      00001C C5                      86 	push	bc
+      00001D 33                      87 	inc	sp
+      00001E F5                      88 	push	af
+      00001F 33                      89 	inc	sp
+      000020 CDr00r00                90 	call	_set_sprite_data
+      000023 E8 04                   91 	add	sp, #4
+                                     92 ;src/snake_logic.c:17: set_sprite_tile(snake.tailLength + 6u, snake.lastUsedTailIndex);
+      000025 21r54r00                93 	ld	hl, #(_snake + 84)
+      000028 4E                      94 	ld	c, (hl)
+      000029 FAr55r00                95 	ld	a, (#(_snake + 85) + 0)
+      00002C C6 06                   96 	add	a, #0x06
+                                     97 ;/opt/gbdk/include/gb/gb.h:1314: shadow_OAM[nb].tile=tile;
+      00002E 6F                      98 	ld	l, a
+      00002F 11r00r00                99 	ld	de, #_shadow_OAM+0
+                                    100 ;	spillPairReg hl
+                                    101 ;	spillPairReg hl
+      000032 26 00                  102 	ld	h, #0x00
+                                    103 ;	spillPairReg hl
+                                    104 ;	spillPairReg hl
+      000034 29                     105 	add	hl, hl
+      000035 29                     106 	add	hl, hl
+      000036 19                     107 	add	hl, de
+      000037 23                     108 	inc	hl
+      000038 23                     109 	inc	hl
+      000039 5D                     110 	ld	e, l
+      00003A 54                     111 	ld	d, h
+      00003B 79                     112 	ld	a, c
+      00003C 12                     113 	ld	(de), a
+                           00003D   114 	C$snake_logic.c$20$1_1$91	= .
+                                    115 	.globl	C$snake_logic.c$20$1_1$91
+                                    116 ;src/snake_logic.c:20: point.x = 99;
+                           00003D   117 	C$snake_logic.c$21$1_1$91	= .
+                                    118 	.globl	C$snake_logic.c$21$1_1$91
+                                    119 ;src/snake_logic.c:21: point.y = 99;
+      00003D F8 00                  120 	ldhl	sp,#0
+      00003F 36 63                  121 	ld	(hl), #0x63
+                                    122 ;	spillPairReg hl
+                                    123 ;	spillPairReg hl
+      000041 4D                     124 	ld	c,l
+      000042 44                     125 	ld	b,h
+                                    126 ;	spillPairReg hl
+                                    127 ;	spillPairReg hl
+      000043 23                     128 	inc	hl
+      000044 36 63                  129 	ld	(hl), #0x63
+                           000046   130 	C$snake_logic.c$22$1_1$91	= .
+                                    131 	.globl	C$snake_logic.c$22$1_1$91
+                                    132 ;src/snake_logic.c:22: snake.tail[snake.tailLength] = point;
+      000046 FAr55r00               133 	ld	a, (#(_snake + 85) + 0)
+      000049 87                     134 	add	a, a
+      00004A 5F                     135 	ld	e, a
+      00004B 21r04r00               136 	ld	hl, #(_snake + 4)
+      00004E 16 00                  137 	ld	d, #0x00
+      000050 19                     138 	add	hl, de
+      000051 11 02 00               139 	ld	de, #0x0002
+      000054 D5                     140 	push	de
+      000055 C5                     141 	push	bc
+      000056 E5                     142 	push	hl
+      000057 CDr00r00               143 	call	___memcpy
+      00005A E8 06                  144 	add	sp, #6
+      00005C                        145 00104$:
+                           00005C   146 	C$snake_logic.c$23$1_1$89	= .
+                                    147 	.globl	C$snake_logic.c$23$1_1$89
+                                    148 ;src/snake_logic.c:23: }
+      00005C 33                     149 	inc	sp
+      00005D 33                     150 	inc	sp
+                           00005E   151 	C$snake_logic.c$23$1_1$89	= .
+                                    152 	.globl	C$snake_logic.c$23$1_1$89
+                           00005E   153 	XG$enlargeSnake$0$0	= .
+                                    154 	.globl	XG$enlargeSnake$0$0
+      00005E C9                     155 	ret
+                                    156 	.area _CODE
+                                    157 	.area _INITIALIZER
+                                    158 	.area _CABS (ABS)
