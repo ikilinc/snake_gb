@@ -1,0 +1,120 @@
+;!FILE obj/snake_logic.asm
+XL3
+H 9 areas 4E global symbols
+M snake_logic
+O -mgbz80
+S _set_sprite_data Ref000000
+S .__.ABS. Def000000
+S _shadow_OAM Ref000000
+S ___memcpy Ref000000
+S _SimpleSnakeTiles Ref000000
+A _CODE size 5F flags 0 addr 0
+S C$snake_logic.c$6$0_0$89 Def000000
+S C$snake_logic.c$9$1_0$89 Def000002
+S A$snake_logic$110 Def000039
+S A$snake_logic$120 Def00003D
+S A$snake_logic$111 Def00003A
+S A$snake_logic$102 Def000032
+S A$snake_logic$121 Def00003F
+S A$snake_logic$112 Def00003B
+S A$snake_logic$140 Def000054
+S A$snake_logic$113 Def00003C
+S A$snake_logic$150 Def00005D
+S A$snake_logic$141 Def000055
+S A$snake_logic$105 Def000034
+S A$snake_logic$142 Def000056
+S A$snake_logic$133 Def000046
+S A$snake_logic$124 Def000041
+S A$snake_logic$106 Def000035
+S A$snake_logic$143 Def000057
+S A$snake_logic$134 Def000049
+S A$snake_logic$125 Def000042
+S A$snake_logic$107 Def000036
+S A$snake_logic$144 Def00005A
+S A$snake_logic$135 Def00004A
+S A$snake_logic$108 Def000037
+S A$snake_logic$136 Def00004B
+S A$snake_logic$109 Def000038
+S A$snake_logic$155 Def00005E
+S A$snake_logic$137 Def00004E
+S A$snake_logic$128 Def000043
+S G$enlargeSnake$0$0 Def000000
+S A$snake_logic$138 Def000050
+S A$snake_logic$129 Def000044
+S A$snake_logic$139 Def000051
+S A$snake_logic$149 Def00005C
+S C$snake_logic.c$11$2_0$90 Def000009
+S _enlargeSnake Def000000
+S A$snake_logic$80 Def000011
+S A$snake_logic$62 Def000002
+S C$snake_logic.c$20$1_1$91 Def00003D
+S A$snake_logic$90 Def000020
+S A$snake_logic$81 Def000014
+S A$snake_logic$63 Def000005
+S C$snake_logic.c$21$1_1$91 Def00003D
+S A$snake_logic$91 Def000023
+S A$snake_logic$82 Def000015
+S A$snake_logic$73 Def00000B
+S A$snake_logic$64 Def000007
+S C$snake_logic.c$22$1_1$91 Def000046
+S A$snake_logic$83 Def000016
+S A$snake_logic$74 Def00000C
+S A$snake_logic$93 Def000025
+S A$snake_logic$84 Def000018
+S A$snake_logic$75 Def00000D
+S A$snake_logic$57 Def000000
+S A$snake_logic$94 Def000028
+S A$snake_logic$85 Def00001B
+S A$snake_logic$76 Def000010
+S A$snake_logic$58 Def000001
+S A$snake_logic$95 Def000029
+S A$snake_logic$86 Def00001C
+S A$snake_logic$68 Def000009
+S A$snake_logic$96 Def00002C
+S A$snake_logic$87 Def00001D
+S A$snake_logic$88 Def00001E
+S A$snake_logic$98 Def00002E
+S A$snake_logic$89 Def00001F
+S C$snake_logic.c$14$1_0$89 Def00000B
+S A$snake_logic$99 Def00002F
+S C$snake_logic.c$23$1_1$89 Def00005E
+S XG$enlargeSnake$0$0 Def00005E
+S C$snake_logic.c$16$1_0$89 Def000011
+A _DATA size 56 flags 0 addr 0
+S _snake Def000000
+S G$snake$0_0$0 Def000000
+A _INITIALIZED size 0 flags 0 addr 0
+A _DABS size 0 flags 8 addr 0
+A _HOME size 0 flags 0 addr 0
+A _GSINIT size 0 flags 0 addr 0
+A _GSFINAL size 0 flags 0 addr 0
+A _INITIALIZER size 0 flags 0 addr 0
+A _CABS size 0 flags 8 addr 0
+T 00 00 00
+R 00 00 01 00
+T 00 00 00
+R 00 00 01 00
+T 00 00 00
+R 00 00 00 00
+T 00 00 00 3B 3B FA 55 00 FE 1E 28 53 18 00
+R 00 00 00 00 00 06 01 00
+T 0B 00 00
+R 00 00 00 00
+T 0B 00 00 4F 0C 21 55 00 71 21 54 00 46 79 C6 06
+R 00 00 00 00 00 06 01 00 00 0A 01 00
+T 18 00 00 11 00 00 D5 C5 33 F5 33 CD 00 00 E8 04
+R 00 00 00 00 02 04 04 00 02 0C 00 00
+T 25 00 00 21 54 00 4E FA 55 00 C6 06 6F 11 00 00
+R 00 00 00 00 00 04 01 00 00 08 01 00 02 0E 02 00
+T 32 00 00 26 00 29 29 19 23 23 5D 54 79 12 F8 00
+R 00 00 00 00
+T 3F 00 00 36 63 4D 44 23 36 63 FA 55 00 87 5F 21
+R 00 00 00 00 00 0B 01 00
+T 4C 00 00 04 00 16 00 19 11 02 00 D5 C5 E5 CD
+R 00 00 00 00 00 03 01 00
+T 58 00 00 00 00 E8 06
+R 00 00 00 00 02 03 03 00
+T 5C 00 00
+R 00 00 00 00
+T 5C 00 00 33 33 C9
+R 00 00 00 00
