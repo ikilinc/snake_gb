@@ -12,7 +12,8 @@
         "snake_bg_tiles.h": "c",
         "font.h": "c",
         "stddef.h": "c",
-        "drawing.h": "c"
+        "drawing.h": "c",
+        "types.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

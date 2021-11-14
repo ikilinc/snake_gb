@@ -12,35 +12,35 @@
                                      12 	.globl _eatAppleIfPossible
                                      13 	.globl _adjustSnakeSpeed
                                      14 	.globl _collideWIthApple
-                                     15 	.globl _moveSnake
+                                     15 	.globl _gameover_if_collide_with_wall
                                      16 	.globl _gameover
-                                     17 	.globl _controls_controller
-                                     18 	.globl _is_snake_moving_left
-                                     19 	.globl _is_snake_moving_up
-                                     20 	.globl _startGame
-                                     21 	.globl _enableSound
-                                     22 	.globl _reset_snake_head
-                                     23 	.globl _placeApple
-                                     24 	.globl _initApple
-                                     25 	.globl _initSnake
-                                     26 	.globl _enlargeSnake
-                                     27 	.globl _hUGE_dosound
-                                     28 	.globl _hUGE_init
-                                     29 	.globl _rand
-                                     30 	.globl _initrand
-                                     31 	.globl _clock
-                                     32 	.globl _abs
-                                     33 	.globl _set_sprite_palette
-                                     34 	.globl _set_bkg_palette
-                                     35 	.globl _set_sprite_data
-                                     36 	.globl _get_bkg_tile_xy
-                                     37 	.globl _set_bkg_tiles
-                                     38 	.globl _set_bkg_data
-                                     39 	.globl _wait_vbl_done
-                                     40 	.globl _joypad
-                                     41 	.globl _add_VBL
-                                     42 	.globl _timeCounter
-                                     43 	.globl _lastTime
+                                     17 	.globl _check_input
+                                     18 	.globl _startGame
+                                     19 	.globl _enableSound
+                                     20 	.globl _placeApple
+                                     21 	.globl _initApple
+                                     22 	.globl _check_collision_with_wall
+                                     23 	.globl _move_down
+                                     24 	.globl _move_up
+                                     25 	.globl _move_left
+                                     26 	.globl _move_right
+                                     27 	.globl _move_snake
+                                     28 	.globl _enlarge_snake
+                                     29 	.globl _init_snake
+                                     30 	.globl _hUGE_dosound
+                                     31 	.globl _hUGE_init
+                                     32 	.globl _rand
+                                     33 	.globl _initrand
+                                     34 	.globl _clock
+                                     35 	.globl _abs
+                                     36 	.globl _set_sprite_palette
+                                     37 	.globl _set_bkg_palette
+                                     38 	.globl _set_sprite_data
+                                     39 	.globl _set_bkg_tiles
+                                     40 	.globl _set_bkg_data
+                                     41 	.globl _wait_vbl_done
+                                     42 	.globl _joypad
+                                     43 	.globl _add_VBL
                                      44 	.globl _apple
                                      45 ;--------------------------------------------------------
                                      46 ; special function registers
@@ -52,1828 +52,616 @@
                            000000    52 G$apple$0_0$0==.
       000000                         53 _apple::
       000000                         54 	.ds 2
-                           000002    55 Fmain$turnaraoundMap$0_0$0==.
-      000002                         56 _turnaraoundMap:
-      000002                         57 	.ds 625
-                                     58 ;--------------------------------------------------------
-                                     59 ; ram data
-                                     60 ;--------------------------------------------------------
-                                     61 	.area _INITIALIZED
-                           000000    62 Fmain$currentSpeed$0_0$0==.
-      000000                         63 _currentSpeed:
-      000000                         64 	.ds 1
-                           000001    65 Fmain$appleEatCount$0_0$0==.
-      000001                         66 _appleEatCount:
-      000001                         67 	.ds 1
-                           000002    68 Fmain$snakeHeadspriteProp$0_0$0==.
-      000002                         69 _snakeHeadspriteProp:
-      000002                         70 	.ds 1
-                           000003    71 Fmain$snakeHeadSpriteIndex$0_0$0==.
-      000003                         72 _snakeHeadSpriteIndex:
-      000003                         73 	.ds 1
-                           000004    74 G$lastTime$0_0$0==.
-      000004                         75 _lastTime::
-      000004                         76 	.ds 2
-                           000006    77 G$timeCounter$0_0$0==.
-      000006                         78 _timeCounter::
-      000006                         79 	.ds 2
+                                     55 ;--------------------------------------------------------
+                                     56 ; ram data
+                                     57 ;--------------------------------------------------------
+                                     58 	.area _INITIALIZED
+                           000000    59 Fmain$appleEatCount$0_0$0==.
+      000000                         60 _appleEatCount:
+      000000                         61 	.ds 1
+                                     62 ;--------------------------------------------------------
+                                     63 ; absolute external ram data
+                                     64 ;--------------------------------------------------------
+                                     65 	.area _DABS (ABS)
+                                     66 ;--------------------------------------------------------
+                                     67 ; global & static initialisations
+                                     68 ;--------------------------------------------------------
+                                     69 	.area _HOME
+                                     70 	.area _GSINIT
+                                     71 	.area _GSFINAL
+                                     72 	.area _GSINIT
+                                     73 ;--------------------------------------------------------
+                                     74 ; Home
+                                     75 ;--------------------------------------------------------
+                                     76 	.area _HOME
+                                     77 	.area _HOME
+                                     78 ;--------------------------------------------------------
+                                     79 ; code
                                      80 ;--------------------------------------------------------
-                                     81 ; absolute external ram data
-                                     82 ;--------------------------------------------------------
-                                     83 	.area _DABS (ABS)
-                                     84 ;--------------------------------------------------------
-                                     85 ; global & static initialisations
-                                     86 ;--------------------------------------------------------
-                                     87 	.area _HOME
-                                     88 	.area _GSINIT
-                                     89 	.area _GSFINAL
-                                     90 	.area _GSINIT
-                                     91 ;--------------------------------------------------------
-                                     92 ; Home
-                                     93 ;--------------------------------------------------------
-                                     94 	.area _HOME
-                                     95 	.area _HOME
-                                     96 ;--------------------------------------------------------
-                                     97 ; code
-                                     98 ;--------------------------------------------------------
-                                     99 	.area _CODE
-                           000000   100 	G$initSnake$0$0	= .
-                                    101 	.globl	G$initSnake$0$0
-                           000000   102 	C$main.c$50$0_0$147	= .
-                                    103 	.globl	C$main.c$50$0_0$147
-                                    104 ;src/main.c:50: void initSnake()
-                                    105 ;	---------------------------------
-                                    106 ; Function initSnake
-                                    107 ; ---------------------------------
-      000000                        108 _initSnake::
-                           000000   109 	C$main.c$52$1_0$147	= .
-                                    110 	.globl	C$main.c$52$1_0$147
-                                    111 ;src/main.c:52: snake.x = (9 * 8) + OFF_SCREEN_OFFSET_X;
-      000000 21r00r00               112 	ld	hl, #_snake
-      000003 36 50                  113 	ld	(hl), #0x50
-                           000005   114 	C$main.c$53$1_0$147	= .
-                                    115 	.globl	C$main.c$53$1_0$147
-                                    116 ;src/main.c:53: snake.y = ((DISPLAY_MAX_TILE_Y * 8) / 2) + OFF_SCREEN_OFFSET_Y;
-      000005 21r01r00               117 	ld	hl, #(_snake + 1)
-      000008 36 58                  118 	ld	(hl), #0x58
-                           00000A   119 	C$main.c$54$1_0$147	= .
-                                    120 	.globl	C$main.c$54$1_0$147
-                                    121 ;src/main.c:54: snake.lastUsedTailIndex = 1u;
-      00000A 21r54r00               122 	ld	hl, #(_snake + 84)
-      00000D 36 01                  123 	ld	(hl), #0x01
-                           00000F   124 	C$main.c$55$1_0$147	= .
-                                    125 	.globl	C$main.c$55$1_0$147
-                                    126 ;src/main.c:55: snake.direction[0] = -1 * SNAKE_MOVEMENT_STEP;
-      00000F 21r02r00               127 	ld	hl, #(_snake + 2)
-      000012 36 F8                  128 	ld	(hl), #0xf8
-                           000014   129 	C$main.c$56$1_0$147	= .
-                                    130 	.globl	C$main.c$56$1_0$147
-                                    131 ;src/main.c:56: snake.direction[1] = 0 * SNAKE_MOVEMENT_STEP;
-      000014 21r03r00               132 	ld	hl, #(_snake + 3)
-                           000017   133 	C$main.c$57$3_0$149	= .
-                                    134 	.globl	C$main.c$57$3_0$149
-                                    135 ;src/main.c:57: for (int i = 0; i <= snake.tailLength; i++)
-      000017 01 00 00               136 	ld	bc, #0x0000
-      00001A 71                     137 	ld	(hl), c
-      00001B                        138 00105$:
-      00001B FAr55r00               139 	ld	a, (#(_snake + 85) + 0)
-      00001E 6F                     140 	ld	l, a
-                                    141 ;	spillPairReg hl
-                                    142 ;	spillPairReg hl
-      00001F 26 00                  143 	ld	h, #0x00
-                                    144 ;	spillPairReg hl
-                                    145 ;	spillPairReg hl
-      000021 58                     146 	ld	e, b
-      000022 54                     147 	ld	d, h
-      000023 7D                     148 	ld	a, l
-      000024 91                     149 	sub	a, c
-      000025 7C                     150 	ld	a, h
-      000026 98                     151 	sbc	a, b
-      000027 CB 7B                  152 	bit	7, e
-      000029 28 07                  153 	jr	Z, 00120$
-      00002B CB 7A                  154 	bit	7, d
-      00002D 20 08                  155 	jr	NZ, 00121$
-      00002F BF                     156 	cp	a, a
-      000030 18 05                  157 	jr	00121$
-      000032                        158 00120$:
-      000032 CB 7A                  159 	bit	7, d
-      000034 28 01                  160 	jr	Z, 00121$
-      000036 37                     161 	scf
-      000037                        162 00121$:
-      000037 38 1E                  163 	jr	C, 00101$
-                                    164 ;src/main.c:59: hide_sprite(i + 6u);
-      000039 79                     165 	ld	a, c
-      00003A C6 06                  166 	add	a, #0x06
-      00003C 5F                     167 	ld	e, a
-                                    168 ;/opt/gbdk/include/gb/gb.h:1413: shadow_OAM[nb].y = 0;
-      00003D 26 00                  169 	ld	h, #0x00
-                                    170 ;	spillPairReg hl
-                                    171 ;	spillPairReg hl
-      00003F 6B                     172 	ld	l, e
-      000040 29                     173 	add	hl, hl
-      000041 29                     174 	add	hl, hl
-      000042 11r00r00               175 	ld	de, #_shadow_OAM
-      000045 19                     176 	add	hl, de
-      000046 36 00                  177 	ld	(hl), #0x00
-                           000048   178 	C$main.c$60$3_0$149	= .
-                                    179 	.globl	C$main.c$60$3_0$149
-                                    180 ;src/main.c:60: snake.tail[i].x = 99;
-      000048 69                     181 	ld	l, c
-      000049 60                     182 	ld	h, b
-      00004A 29                     183 	add	hl, hl
-      00004B 11r04r00               184 	ld	de, #(_snake + 4)
-      00004E 19                     185 	add	hl, de
-                           00004F   186 	C$main.c$61$3_0$149	= .
-                                    187 	.globl	C$main.c$61$3_0$149
-                                    188 ;src/main.c:61: snake.tail[i].y = 99;
-      00004F 3E 63                  189 	ld	a, #0x63
-      000051 22                     190 	ld	(hl+), a
-      000052 36 63                  191 	ld	(hl), #0x63
-                           000054   192 	C$main.c$57$2_0$148	= .
-                                    193 	.globl	C$main.c$57$2_0$148
-                                    194 ;src/main.c:57: for (int i = 0; i <= snake.tailLength; i++)
-      000054 03                     195 	inc	bc
-      000055 18 C4                  196 	jr	00105$
-      000057                        197 00101$:
-                           000057   198 	C$main.c$63$1_0$147	= .
-                                    199 	.globl	C$main.c$63$1_0$147
-                                    200 ;src/main.c:63: snake.tailLength = 0;
-      000057 21r55r00               201 	ld	hl, #(_snake + 85)
-      00005A 36 00                  202 	ld	(hl), #0x00
-                                    203 ;/opt/gbdk/include/gb/gb.h:1314: shadow_OAM[nb].tile=tile;
-      00005C 21r02r00               204 	ld	hl, #(_shadow_OAM + 2)
-      00005F 36 01                  205 	ld	(hl), #0x01
-                           000061   206 	C$main.c$65$3_0$147	= .
-                                    207 	.globl	C$main.c$65$3_0$147
-                                    208 ;src/main.c:65: set_sprite_tile(SNAKE_H_SPRITE_INDEX, 1u); // 1 => position of snake sprite on vram
-                           000061   209 	C$main.c$66$3_0$147	= .
-                                    210 	.globl	C$main.c$66$3_0$147
-                                    211 ;src/main.c:66: }
-                           000061   212 	C$main.c$66$3_0$147	= .
-                                    213 	.globl	C$main.c$66$3_0$147
-                           000061   214 	XG$initSnake$0$0	= .
-                                    215 	.globl	XG$initSnake$0$0
-      000061 C9                     216 	ret
-                           000062   217 Fmain$palette$0_0$0 == .
-      000062                        218 _palette:
-      000062 FF 7F                  219 	.dw #0x7fff
-      000064 00 00                  220 	.dw #0x0000
-      000066 87 02                  221 	.dw #0x0287
-      000068 1C 03                  222 	.dw #0x031c
-                           00006A   223 Fmain$palette2$0_0$0 == .
-      00006A                        224 _palette2:
-      00006A BC 17                  225 	.dw #0x17bc
-      00006C E7 22                  226 	.dw #0x22e7
-      00006E C4 19                  227 	.dw #0x19c4
-      000070 1D 00                  228 	.dw #0x001d
-                           000072   229 Fmain$speed$0_0$0 == .
-      000072                        230 _speed:
-      000072 0A 00                  231 	.dw #0x000a
-      000074 09 00                  232 	.dw #0x0009
-      000076 08 00                  233 	.dw #0x0008
-      000078 06 00                  234 	.dw #0x0006
-      00007A 04 00                  235 	.dw #0x0004
-      00007C 02 00                  236 	.dw #0x0002
-      00007E 01 00                  237 	.dw #0x0001
-                           000080   238 	G$initApple$0$0	= .
-                                    239 	.globl	G$initApple$0$0
-                           000080   240 	C$main.c$68$3_0$156	= .
-                                    241 	.globl	C$main.c$68$3_0$156
-                                    242 ;src/main.c:68: void initApple()
-                                    243 ;	---------------------------------
-                                    244 ; Function initApple
-                                    245 ; ---------------------------------
-      000080                        246 _initApple::
-                                    247 ;/opt/gbdk/include/gb/gb.h:1314: shadow_OAM[nb].tile=tile;
-      000080 21r06r00               248 	ld	hl, #(_shadow_OAM + 6)
-      000083 36 03                  249 	ld	(hl), #0x03
-                           000085   250 	C$main.c$70$3_0$156	= .
-                                    251 	.globl	C$main.c$70$3_0$156
-                                    252 ;src/main.c:70: set_sprite_tile(APPLE_SPRITE_INDEX, 3u); // 3 => position of apple sprite on vram
-                           000085   253 	C$main.c$71$3_0$156	= .
-                                    254 	.globl	C$main.c$71$3_0$156
-                                    255 ;src/main.c:71: }
-                           000085   256 	C$main.c$71$3_0$156	= .
-                                    257 	.globl	C$main.c$71$3_0$156
-                           000085   258 	XG$initApple$0$0	= .
-                                    259 	.globl	XG$initApple$0$0
-      000085 C9                     260 	ret
-                           000086   261 	G$placeApple$0$0	= .
-                                    262 	.globl	G$placeApple$0$0
-                           000086   263 	C$main.c$73$3_0$160	= .
-                                    264 	.globl	C$main.c$73$3_0$160
-                                    265 ;src/main.c:73: void placeApple()
-                                    266 ;	---------------------------------
-                                    267 ; Function placeApple
-                                    268 ; ---------------------------------
-      000086                        269 _placeApple::
-                           000086   270 	C$main.c$75$1_0$160	= .
-                                    271 	.globl	C$main.c$75$1_0$160
-                                    272 ;src/main.c:75: apple.x = ((abs(rand()) % (12u - 7u)) + 7u) * 8u;
-      000086 CDr00r00               273 	call	_rand
-      000089 7B                     274 	ld	a, e
-      00008A 07                     275 	rlca
-      00008B 9F                     276 	sbc	a, a
-      00008C 57                     277 	ld	d, a
-      00008D D5                     278 	push	de
-      00008E CDr00r00               279 	call	_abs
-      000091 E1                     280 	pop	hl
-      000092 01 05 00               281 	ld	bc, #0x0005
-      000095 C5                     282 	push	bc
-      000096 D5                     283 	push	de
-      000097 CDr00r00               284 	call	__moduint
-      00009A E8 04                  285 	add	sp, #4
-      00009C 7B                     286 	ld	a, e
-      00009D C6 07                  287 	add	a, #0x07
-      00009F 87                     288 	add	a, a
-      0000A0 87                     289 	add	a, a
-      0000A1 87                     290 	add	a, a
-      0000A2 EAr00r00               291 	ld	(#_apple),a
-                           0000A5   292 	C$main.c$76$1_0$160	= .
-                                    293 	.globl	C$main.c$76$1_0$160
-                                    294 ;src/main.c:76: apple.y = ((abs(rand()) % (15u - 7u)) + 7u) * 8u;
-      0000A5 CDr00r00               295 	call	_rand
-      0000A8 7B                     296 	ld	a, e
-      0000A9 07                     297 	rlca
-      0000AA 9F                     298 	sbc	a, a
-      0000AB 57                     299 	ld	d, a
-      0000AC D5                     300 	push	de
-      0000AD CDr00r00               301 	call	_abs
-      0000B0 E1                     302 	pop	hl
-      0000B1 7B                     303 	ld	a, e
-      0000B2 E6 07                  304 	and	a, #0x07
-      0000B4 C6 07                  305 	add	a, #0x07
-      0000B6 87                     306 	add	a, a
-      0000B7 87                     307 	add	a, a
-      0000B8 87                     308 	add	a, a
-      0000B9 EAr01r00               309 	ld	(#(_apple + 1)),a
-                                    310 ;src/main.c:77: move_sprite(APPLE_SPRITE_INDEX, apple.x, apple.y);
-      0000BC 47                     311 	ld	b, a
-      0000BD 21r00r00               312 	ld	hl, #_apple
-      0000C0 4E                     313 	ld	c, (hl)
-                                    314 ;/opt/gbdk/include/gb/gb.h:1387: OAM_item_t * itm = &shadow_OAM[nb];
-      0000C1 21r04r00               315 	ld	hl, #(_shadow_OAM + 4)
-                                    316 ;/opt/gbdk/include/gb/gb.h:1388: itm->y=y, itm->x=x;
-      0000C4 78                     317 	ld	a, b
-      0000C5 22                     318 	ld	(hl+), a
-      0000C6 71                     319 	ld	(hl), c
-                           0000C7   320 	C$main.c$77$3_0$160	= .
-                                    321 	.globl	C$main.c$77$3_0$160
-                                    322 ;src/main.c:77: move_sprite(APPLE_SPRITE_INDEX, apple.x, apple.y);
-                           0000C7   323 	C$main.c$78$3_0$160	= .
-                                    324 	.globl	C$main.c$78$3_0$160
-                                    325 ;src/main.c:78: }
-                           0000C7   326 	C$main.c$78$3_0$160	= .
-                                    327 	.globl	C$main.c$78$3_0$160
-                           0000C7   328 	XG$placeApple$0$0	= .
-                                    329 	.globl	XG$placeApple$0$0
-      0000C7 C9                     330 	ret
-                           0000C8   331 	G$reset_snake_head$0$0	= .
-                                    332 	.globl	G$reset_snake_head$0$0
-                           0000C8   333 	C$main.c$80$3_0$164	= .
-                                    334 	.globl	C$main.c$80$3_0$164
-                                    335 ;src/main.c:80: void reset_snake_head()
-                                    336 ;	---------------------------------
-                                    337 ; Function reset_snake_head
-                                    338 ; ---------------------------------
-      0000C8                        339 _reset_snake_head::
-                           0000C8   340 	C$main.c$82$1_0$164	= .
-                                    341 	.globl	C$main.c$82$1_0$164
-                                    342 ;src/main.c:82: snakeHeadspriteProp = 0;
-      0000C8 21r02r00               343 	ld	hl, #_snakeHeadspriteProp
-      0000CB 36 00                  344 	ld	(hl), #0x00
-                           0000CD   345 	C$main.c$83$1_0$164	= .
-                                    346 	.globl	C$main.c$83$1_0$164
-                                    347 ;src/main.c:83: snakeHeadSpriteIndex = 1u;
-      0000CD 21r03r00               348 	ld	hl, #_snakeHeadSpriteIndex
-      0000D0 36 01                  349 	ld	(hl), #0x01
-                           0000D2   350 	C$main.c$84$1_0$164	= .
-                                    351 	.globl	C$main.c$84$1_0$164
-                                    352 ;src/main.c:84: }
-                           0000D2   353 	C$main.c$84$1_0$164	= .
-                                    354 	.globl	C$main.c$84$1_0$164
-                           0000D2   355 	XG$reset_snake_head$0$0	= .
-                                    356 	.globl	XG$reset_snake_head$0$0
-      0000D2 C9                     357 	ret
-                           0000D3   358 	G$enableSound$0$0	= .
-                                    359 	.globl	G$enableSound$0$0
-                           0000D3   360 	C$main.c$86$1_0$165	= .
-                                    361 	.globl	C$main.c$86$1_0$165
-                                    362 ;src/main.c:86: void enableSound()
-                                    363 ;	---------------------------------
-                                    364 ; Function enableSound
-                                    365 ; ---------------------------------
-      0000D3                        366 _enableSound::
-                           0000D3   367 	C$main.c$88$1_0$165	= .
-                                    368 	.globl	C$main.c$88$1_0$165
-                                    369 ;src/main.c:88: NR52_REG = 0x80;
-      0000D3 3E 80                  370 	ld	a, #0x80
-      0000D5 E0r00                  371 	ldh	(_NR52_REG + 0), a
-                           0000D7   372 	C$main.c$89$1_0$165	= .
-                                    373 	.globl	C$main.c$89$1_0$165
-                                    374 ;src/main.c:89: NR51_REG = 0xFF;
-      0000D7 3E FF                  375 	ld	a, #0xff
-      0000D9 E0r00                  376 	ldh	(_NR51_REG + 0), a
-                           0000DB   377 	C$main.c$90$1_0$165	= .
-                                    378 	.globl	C$main.c$90$1_0$165
-                                    379 ;src/main.c:90: NR50_REG = 0x77;
-      0000DB 3E 77                  380 	ld	a, #0x77
-      0000DD E0r00                  381 	ldh	(_NR50_REG + 0), a
-                           0000DF   382 	C$main.c$91$1_0$165	= .
-                                    383 	.globl	C$main.c$91$1_0$165
-                                    384 ;src/main.c:91: }
-                           0000DF   385 	C$main.c$91$1_0$165	= .
-                                    386 	.globl	C$main.c$91$1_0$165
-                           0000DF   387 	XG$enableSound$0$0	= .
-                                    388 	.globl	XG$enableSound$0$0
-      0000DF C9                     389 	ret
-                           0000E0   390 	G$startGame$0$0	= .
-                                    391 	.globl	G$startGame$0$0
-                           0000E0   392 	C$main.c$93$1_0$166	= .
-                                    393 	.globl	C$main.c$93$1_0$166
-                                    394 ;src/main.c:93: void startGame()
-                                    395 ;	---------------------------------
-                                    396 ; Function startGame
-                                    397 ; ---------------------------------
-      0000E0                        398 _startGame::
-                           0000E0   399 	C$main.c$95$1_0$166	= .
-                                    400 	.globl	C$main.c$95$1_0$166
-                                    401 ;src/main.c:95: initrand(clock());
-      0000E0 CDr00r00               402 	call	_clock
-      0000E3 D5                     403 	push	de
-      0000E4 CDr00r00               404 	call	_initrand
-      0000E7 E1                     405 	pop	hl
-                           0000E8   406 	C$main.c$96$1_0$166	= .
-                                    407 	.globl	C$main.c$96$1_0$166
-                                    408 ;src/main.c:96: initSnake();
-      0000E8 CDr00r00               409 	call	_initSnake
-                           0000EB   410 	C$main.c$97$1_0$166	= .
-                                    411 	.globl	C$main.c$97$1_0$166
-                                    412 ;src/main.c:97: reset_snake_head();
-      0000EB CDrC8r00               413 	call	_reset_snake_head
-                           0000EE   414 	C$main.c$98$1_0$166	= .
-                                    415 	.globl	C$main.c$98$1_0$166
-                                    416 ;src/main.c:98: initApple();
-      0000EE CDr80r00               417 	call	_initApple
-                           0000F1   418 	C$main.c$99$1_0$166	= .
-                                    419 	.globl	C$main.c$99$1_0$166
-                                    420 ;src/main.c:99: placeApple();
-      0000F1 CDr86r00               421 	call	_placeApple
-                           0000F4   422 	C$main.c$100$1_0$166	= .
-                                    423 	.globl	C$main.c$100$1_0$166
-                                    424 ;src/main.c:100: currentSpeed = 0;
-      0000F4 21r00r00               425 	ld	hl, #_currentSpeed
-      0000F7 36 00                  426 	ld	(hl), #0x00
-                           0000F9   427 	C$main.c$101$1_0$166	= .
-                                    428 	.globl	C$main.c$101$1_0$166
-                                    429 ;src/main.c:101: appleEatCount = 0;
-      0000F9 21r01r00               430 	ld	hl, #_appleEatCount
-      0000FC 36 00                  431 	ld	(hl), #0x00
-                           0000FE   432 	C$main.c$102$1_0$166	= .
-                                    433 	.globl	C$main.c$102$1_0$166
-                                    434 ;src/main.c:102: SHOW_BKG;
-      0000FE F0r00                  435 	ldh	a, (_LCDC_REG + 0)
-      000100 F6 01                  436 	or	a, #0x01
-      000102 E0r00                  437 	ldh	(_LCDC_REG + 0), a
-                           000104   438 	C$main.c$103$1_0$166	= .
-                                    439 	.globl	C$main.c$103$1_0$166
-                                    440 ;src/main.c:103: SHOW_SPRITES;
-      000104 F0r00                  441 	ldh	a, (_LCDC_REG + 0)
-      000106 F6 02                  442 	or	a, #0x02
-      000108 E0r00                  443 	ldh	(_LCDC_REG + 0), a
-                           00010A   444 	C$main.c$104$1_0$166	= .
-                                    445 	.globl	C$main.c$104$1_0$166
-                                    446 ;src/main.c:104: }
-                           00010A   447 	C$main.c$104$1_0$166	= .
-                                    448 	.globl	C$main.c$104$1_0$166
-                           00010A   449 	XG$startGame$0$0	= .
-                                    450 	.globl	XG$startGame$0$0
-      00010A C9                     451 	ret
-                           00010B   452 	G$is_snake_moving_up$0$0	= .
-                                    453 	.globl	G$is_snake_moving_up$0$0
-                           00010B   454 	C$main.c$106$1_0$167	= .
-                                    455 	.globl	C$main.c$106$1_0$167
-                                    456 ;src/main.c:106: BOOLEAN is_snake_moving_up()
-                                    457 ;	---------------------------------
-                                    458 ; Function is_snake_moving_up
-                                    459 ; ---------------------------------
-      00010B                        460 _is_snake_moving_up::
-                           00010B   461 	C$main.c$108$1_0$167	= .
-                                    462 	.globl	C$main.c$108$1_0$167
-                                    463 ;src/main.c:108: return snake.direction[1] == -1 * SNAKE_MOVEMENT_STEP;
-      00010B FAr03r00               464 	ld	a, (#(_snake + 3) + 0)
-      00010E D6 F8                  465 	sub	a, #0xf8
-      000110 3E 01                  466 	ld	a, #0x01
-      000112 28 01                  467 	jr	Z, 00104$
-      000114 AF                     468 	xor	a, a
-      000115                        469 00104$:
-      000115 5F                     470 	ld	e, a
-                           000116   471 	C$main.c$109$1_0$167	= .
-                                    472 	.globl	C$main.c$109$1_0$167
-                                    473 ;src/main.c:109: }
-                           000116   474 	C$main.c$109$1_0$167	= .
-                                    475 	.globl	C$main.c$109$1_0$167
-                           000116   476 	XG$is_snake_moving_up$0$0	= .
-                                    477 	.globl	XG$is_snake_moving_up$0$0
-      000116 C9                     478 	ret
-                           000117   479 	G$is_snake_moving_left$0$0	= .
-                                    480 	.globl	G$is_snake_moving_left$0$0
-                           000117   481 	C$main.c$111$1_0$168	= .
-                                    482 	.globl	C$main.c$111$1_0$168
-                                    483 ;src/main.c:111: BOOLEAN is_snake_moving_left()
-                                    484 ;	---------------------------------
-                                    485 ; Function is_snake_moving_left
-                                    486 ; ---------------------------------
-      000117                        487 _is_snake_moving_left::
-                           000117   488 	C$main.c$113$1_0$168	= .
-                                    489 	.globl	C$main.c$113$1_0$168
-                                    490 ;src/main.c:113: return snake.direction[0] == -1 * SNAKE_MOVEMENT_STEP;
-      000117 FAr02r00               491 	ld	a, (#(_snake + 2) + 0)
-      00011A D6 F8                  492 	sub	a, #0xf8
-      00011C 3E 01                  493 	ld	a, #0x01
-      00011E 28 01                  494 	jr	Z, 00104$
-      000120 AF                     495 	xor	a, a
-      000121                        496 00104$:
-      000121 5F                     497 	ld	e, a
-                           000122   498 	C$main.c$114$1_0$168	= .
-                                    499 	.globl	C$main.c$114$1_0$168
-                                    500 ;src/main.c:114: }
-                           000122   501 	C$main.c$114$1_0$168	= .
-                                    502 	.globl	C$main.c$114$1_0$168
-                           000122   503 	XG$is_snake_moving_left$0$0	= .
-                                    504 	.globl	XG$is_snake_moving_left$0$0
-      000122 C9                     505 	ret
-                           000123   506 	G$controls_controller$0$0	= .
-                                    507 	.globl	G$controls_controller$0$0
-                           000123   508 	C$main.c$116$1_0$169	= .
-                                    509 	.globl	C$main.c$116$1_0$169
-                                    510 ;src/main.c:116: void controls_controller()
-                                    511 ;	---------------------------------
-                                    512 ; Function controls_controller
-                                    513 ; ---------------------------------
-      000123                        514 _controls_controller::
-      000123 3B                     515 	dec	sp
-      000124 3B                     516 	dec	sp
-                           000125   517 	C$main.c$119$1_0$169	= .
-                                    518 	.globl	C$main.c$119$1_0$169
-                                    519 ;src/main.c:119: uint8_t *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
-      000125 FAr00r00               520 	ld	a, (#_snake + 0)
-      000128 4F                     521 	ld	c, a
-      000129 06 00                  522 	ld	b, #0x00
-      00012B 69                     523 	ld	l, c
-                                    524 ;	spillPairReg hl
-                                    525 ;	spillPairReg hl
-      00012C 60                     526 	ld	h, b
-                                    527 ;	spillPairReg hl
-                                    528 ;	spillPairReg hl
-      00012D CB 78                  529 	bit	7, b
-      00012F 28 04                  530 	jr	Z, 00132$
-      000131 21 07 00               531 	ld	hl, #0x0007
-      000134 09                     532 	add	hl, bc
-      000135                        533 00132$:
-      000135 CB 2C                  534 	sra	h
-      000137 CB 1D                  535 	rr	l
-      000139 CB 2C                  536 	sra	h
-      00013B CB 1D                  537 	rr	l
-      00013D CB 2C                  538 	sra	h
-      00013F CB 1D                  539 	rr	l
-      000141 4D                     540 	ld	c, l
-      000142 44                     541 	ld	b, h
-      000143 29                     542 	add	hl, hl
-      000144 09                     543 	add	hl, bc
-      000145 29                     544 	add	hl, hl
-      000146 29                     545 	add	hl, hl
-      000147 29                     546 	add	hl, hl
-      000148 09                     547 	add	hl, bc
-      000149 01r02r00               548 	ld	bc,#_turnaraoundMap
-      00014C 09                     549 	add	hl,bc
-      00014D 33                     550 	inc	sp
-      00014E 33                     551 	inc	sp
-      00014F E5                     552 	push	hl
-      000150 FAr01r00               553 	ld	a, (#(_snake + 1) + 0)
-      000153 4F                     554 	ld	c, a
-      000154 06 00                  555 	ld	b, #0x00
-      000156 69                     556 	ld	l, c
-                                    557 ;	spillPairReg hl
-                                    558 ;	spillPairReg hl
-      000157 60                     559 	ld	h, b
-                                    560 ;	spillPairReg hl
-                                    561 ;	spillPairReg hl
-      000158 CB 78                  562 	bit	7, b
-      00015A 28 04                  563 	jr	Z, 00133$
-      00015C 21 07 00               564 	ld	hl, #0x0007
-      00015F 09                     565 	add	hl, bc
-      000160                        566 00133$:
-      000160 4D                     567 	ld	c, l
-      000161 44                     568 	ld	b, h
-      000162 CB 28                  569 	sra	b
-      000164 CB 19                  570 	rr	c
-      000166 CB 28                  571 	sra	b
-      000168 CB 19                  572 	rr	c
-      00016A CB 28                  573 	sra	b
-      00016C CB 19                  574 	rr	c
-      00016E E1                     575 	pop	hl
-      00016F E5                     576 	push	hl
-      000170 09                     577 	add	hl, bc
-      000171 4D                     578 	ld	c, l
-      000172 44                     579 	ld	b, h
-                           000173   580 	C$main.c$121$1_0$169	= .
-                                    581 	.globl	C$main.c$121$1_0$169
-                                    582 ;src/main.c:121: const UINT8 joypadState = joypad();
-      000173 CDr00r00               583 	call	_joypad
-      000176 F8 01                  584 	ldhl	sp,	#1
-      000178 73                     585 	ld	(hl), e
-                           000179   586 	C$main.c$123$1_0$169	= .
-                                    587 	.globl	C$main.c$123$1_0$169
-                                    588 ;src/main.c:123: if ((joypadState == J_RIGHT) && (snake.direction[1] != 0))
-      000179 7E                     589 	ld	a, (hl)
-      00017A 3D                     590 	dec	a
-      00017B 20 35                  591 	jr	NZ, 00125$
-      00017D FAr03r00               592 	ld	a, (#(_snake + 3) + 0)
-      000180 B7                     593 	or	a, a
-      000181 28 2F                  594 	jr	Z, 00125$
-                           000183   595 	C$main.c$125$2_0$170	= .
-                                    596 	.globl	C$main.c$125$2_0$170
-                                    597 ;src/main.c:125: reset_snake_head();
-      000183 C5                     598 	push	bc
-      000184 CDrC8r00               599 	call	_reset_snake_head
-      000187 C1                     600 	pop	bc
-                           000188   601 	C$main.c$126$2_0$170	= .
-                                    602 	.globl	C$main.c$126$2_0$170
-                                    603 ;src/main.c:126: snakeHeadspriteProp += HORIZONTAL_FLIP;
-      000188 21r02r00               604 	ld	hl, #_snakeHeadspriteProp
-      00018B 7E                     605 	ld	a, (hl)
-      00018C C6 20                  606 	add	a, #0x20
-      00018E 77                     607 	ld	(hl), a
-                           00018F   608 	C$main.c$127$2_0$170	= .
-                                    609 	.globl	C$main.c$127$2_0$170
-                                    610 ;src/main.c:127: snakeHeadSpriteIndex = 1u;
-      00018F 21r03r00               611 	ld	hl, #_snakeHeadSpriteIndex
-      000192 36 01                  612 	ld	(hl), #0x01
-                           000194   613 	C$main.c$128$2_0$170	= .
-                                    614 	.globl	C$main.c$128$2_0$170
-                                    615 ;src/main.c:128: if (is_snake_moving_up())
-      000194 C5                     616 	push	bc
-      000195 CDr0Br01               617 	call	_is_snake_moving_up
-      000198 7B                     618 	ld	a, e
-      000199 C1                     619 	pop	bc
-      00019A B7                     620 	or	a, a
-      00019B 28 05                  621 	jr	Z, 00102$
-                           00019D   622 	C$main.c$130$3_0$171	= .
-                                    623 	.globl	C$main.c$130$3_0$171
-                                    624 ;src/main.c:130: *turnaraoundMapValue = VERTICAL_FLIP;
-      00019D 3E 40                  625 	ld	a, #0x40
-      00019F 02                     626 	ld	(bc), a
-      0001A0 18 03                  627 	jr	00103$
-      0001A2                        628 00102$:
-                           0001A2   629 	C$main.c$134$3_0$172	= .
-                                    630 	.globl	C$main.c$134$3_0$172
-                                    631 ;src/main.c:134: *turnaraoundMapValue = 128;
-      0001A2 3E 80                  632 	ld	a, #0x80
-      0001A4 02                     633 	ld	(bc), a
-      0001A5                        634 00103$:
-                           0001A5   635 	C$main.c$137$2_0$170	= .
-                                    636 	.globl	C$main.c$137$2_0$170
-                                    637 ;src/main.c:137: snake.direction[0] = 1 * SNAKE_MOVEMENT_STEP;
-      0001A5 21r02r00               638 	ld	hl, #(_snake + 2)
-      0001A8 36 08                  639 	ld	(hl), #0x08
-                           0001AA   640 	C$main.c$138$2_0$170	= .
-                                    641 	.globl	C$main.c$138$2_0$170
-                                    642 ;src/main.c:138: snake.direction[1] = 0 * SNAKE_MOVEMENT_STEP;
-      0001AA 21r03r00               643 	ld	hl, #(_snake + 3)
-      0001AD 36 00                  644 	ld	(hl), #0x00
-      0001AF C3r4Cr02               645 	jp	00126$
-      0001B2                        646 00125$:
-                           0001B2   647 	C$main.c$140$1_0$169	= .
-                                    648 	.globl	C$main.c$140$1_0$169
-                                    649 ;src/main.c:140: else if (joypadState == J_DOWN && (snake.direction[0] != 0))
-      0001B2 F8 01                  650 	ldhl	sp,	#1
-      0001B4 7E                     651 	ld	a, (hl)
-      0001B5 D6 08                  652 	sub	a, #0x08
-      0001B7 20 34                  653 	jr	NZ, 00121$
-      0001B9 FAr02r00               654 	ld	a, (#(_snake + 2) + 0)
-      0001BC B7                     655 	or	a, a
-      0001BD 28 2E                  656 	jr	Z, 00121$
-                           0001BF   657 	C$main.c$142$2_0$173	= .
-                                    658 	.globl	C$main.c$142$2_0$173
-                                    659 ;src/main.c:142: reset_snake_head();
-      0001BF C5                     660 	push	bc
-      0001C0 CDrC8r00               661 	call	_reset_snake_head
-      0001C3 C1                     662 	pop	bc
-                           0001C4   663 	C$main.c$143$2_0$173	= .
-                                    664 	.globl	C$main.c$143$2_0$173
-                                    665 ;src/main.c:143: snakeHeadspriteProp += VERTICAL_FLIP;
-      0001C4 21r02r00               666 	ld	hl, #_snakeHeadspriteProp
-      0001C7 7E                     667 	ld	a, (hl)
-      0001C8 C6 40                  668 	add	a, #0x40
-      0001CA 77                     669 	ld	(hl), a
-                           0001CB   670 	C$main.c$144$2_0$173	= .
-                                    671 	.globl	C$main.c$144$2_0$173
-                                    672 ;src/main.c:144: snakeHeadSpriteIndex = 5u;
-      0001CB 21r03r00               673 	ld	hl, #_snakeHeadSpriteIndex
-      0001CE 36 05                  674 	ld	(hl), #0x05
-                           0001D0   675 	C$main.c$145$2_0$173	= .
-                                    676 	.globl	C$main.c$145$2_0$173
-                                    677 ;src/main.c:145: if (is_snake_moving_left())
-      0001D0 C5                     678 	push	bc
-      0001D1 CDr17r01               679 	call	_is_snake_moving_left
-      0001D4 7B                     680 	ld	a, e
-      0001D5 C1                     681 	pop	bc
-      0001D6 B7                     682 	or	a, a
-      0001D7 28 05                  683 	jr	Z, 00105$
-                           0001D9   684 	C$main.c$147$3_0$174	= .
-                                    685 	.globl	C$main.c$147$3_0$174
-                                    686 ;src/main.c:147: *turnaraoundMapValue = VERTICAL_FLIP;
-      0001D9 3E 40                  687 	ld	a, #0x40
-      0001DB 02                     688 	ld	(bc), a
-      0001DC 18 03                  689 	jr	00106$
-      0001DE                        690 00105$:
-                           0001DE   691 	C$main.c$151$3_0$175	= .
-                                    692 	.globl	C$main.c$151$3_0$175
-                                    693 ;src/main.c:151: *turnaraoundMapValue = VERTICAL_FLIP + HORIZONTAL_FLIP;
-      0001DE 3E 60                  694 	ld	a, #0x60
-      0001E0 02                     695 	ld	(bc), a
-      0001E1                        696 00106$:
-                           0001E1   697 	C$main.c$154$2_0$173	= .
-                                    698 	.globl	C$main.c$154$2_0$173
-                                    699 ;src/main.c:154: snake.direction[0] = 0 * SNAKE_MOVEMENT_STEP;
-      0001E1 21r02r00               700 	ld	hl, #(_snake + 2)
-      0001E4 36 00                  701 	ld	(hl), #0x00
-                           0001E6   702 	C$main.c$155$2_0$173	= .
-                                    703 	.globl	C$main.c$155$2_0$173
-                                    704 ;src/main.c:155: snake.direction[1] = 1 * SNAKE_MOVEMENT_STEP;
-      0001E6 21r03r00               705 	ld	hl, #(_snake + 3)
-      0001E9 36 08                  706 	ld	(hl), #0x08
-      0001EB 18 5F                  707 	jr	00126$
-      0001ED                        708 00121$:
-                           0001ED   709 	C$main.c$157$1_0$169	= .
-                                    710 	.globl	C$main.c$157$1_0$169
-                                    711 ;src/main.c:157: else if (joypadState == J_LEFT && (snake.direction[1] != 0))
-      0001ED F8 01                  712 	ldhl	sp,	#1
-      0001EF 7E                     713 	ld	a, (hl)
-      0001F0 D6 02                  714 	sub	a, #0x02
-      0001F2 20 26                  715 	jr	NZ, 00117$
-      0001F4 FAr03r00               716 	ld	a, (#(_snake + 3) + 0)
-      0001F7 B7                     717 	or	a, a
-      0001F8 28 20                  718 	jr	Z, 00117$
-                           0001FA   719 	C$main.c$159$2_0$176	= .
-                                    720 	.globl	C$main.c$159$2_0$176
-                                    721 ;src/main.c:159: reset_snake_head();
-      0001FA C5                     722 	push	bc
-      0001FB CDrC8r00               723 	call	_reset_snake_head
-      0001FE CDr0Br01               724 	call	_is_snake_moving_up
-      000201 7B                     725 	ld	a, e
-      000202 C1                     726 	pop	bc
-      000203 B7                     727 	or	a, a
-      000204 28 05                  728 	jr	Z, 00108$
-                           000206   729 	C$main.c$162$3_0$177	= .
-                                    730 	.globl	C$main.c$162$3_0$177
-                                    731 ;src/main.c:162: *turnaraoundMapValue = VERTICAL_FLIP + HORIZONTAL_FLIP;
-      000206 3E 60                  732 	ld	a, #0x60
-      000208 02                     733 	ld	(bc), a
-      000209 18 03                  734 	jr	00109$
-      00020B                        735 00108$:
-                           00020B   736 	C$main.c$166$3_0$178	= .
-                                    737 	.globl	C$main.c$166$3_0$178
-                                    738 ;src/main.c:166: *turnaraoundMapValue = HORIZONTAL_FLIP;
-      00020B 3E 20                  739 	ld	a, #0x20
-      00020D 02                     740 	ld	(bc), a
-      00020E                        741 00109$:
-                           00020E   742 	C$main.c$169$2_0$176	= .
-                                    743 	.globl	C$main.c$169$2_0$176
-                                    744 ;src/main.c:169: snake.direction[0] = -1 * SNAKE_MOVEMENT_STEP;
-      00020E 21r02r00               745 	ld	hl, #(_snake + 2)
-      000211 36 F8                  746 	ld	(hl), #0xf8
-                           000213   747 	C$main.c$170$2_0$176	= .
-                                    748 	.globl	C$main.c$170$2_0$176
-                                    749 ;src/main.c:170: snake.direction[1] = 0 * SNAKE_MOVEMENT_STEP;
-      000213 21r03r00               750 	ld	hl, #(_snake + 3)
-      000216 36 00                  751 	ld	(hl), #0x00
-      000218 18 32                  752 	jr	00126$
-      00021A                        753 00117$:
-                           00021A   754 	C$main.c$172$1_0$169	= .
-                                    755 	.globl	C$main.c$172$1_0$169
-                                    756 ;src/main.c:172: else if (joypadState == J_UP && (snake.direction[0] != 0))
-      00021A F8 01                  757 	ldhl	sp,	#1
-      00021C 7E                     758 	ld	a, (hl)
-      00021D D6 04                  759 	sub	a, #0x04
-      00021F 20 2B                  760 	jr	NZ, 00126$
-      000221 FAr02r00               761 	ld	a, (#(_snake + 2) + 0)
-      000224 B7                     762 	or	a, a
-      000225 28 25                  763 	jr	Z, 00126$
-                           000227   764 	C$main.c$174$2_0$179	= .
-                                    765 	.globl	C$main.c$174$2_0$179
-                                    766 ;src/main.c:174: reset_snake_head();
-      000227 C5                     767 	push	bc
-      000228 CDrC8r00               768 	call	_reset_snake_head
-      00022B C1                     769 	pop	bc
-                           00022C   770 	C$main.c$175$2_0$179	= .
-                                    771 	.globl	C$main.c$175$2_0$179
-                                    772 ;src/main.c:175: snakeHeadSpriteIndex = 5u;
-      00022C 21r03r00               773 	ld	hl, #_snakeHeadSpriteIndex
-      00022F 36 05                  774 	ld	(hl), #0x05
-                           000231   775 	C$main.c$176$2_0$179	= .
-                                    776 	.globl	C$main.c$176$2_0$179
-                                    777 ;src/main.c:176: if (is_snake_moving_left())
-      000231 C5                     778 	push	bc
-      000232 CDr17r01               779 	call	_is_snake_moving_left
-      000235 7B                     780 	ld	a, e
-      000236 C1                     781 	pop	bc
-      000237 B7                     782 	or	a, a
-      000238 28 05                  783 	jr	Z, 00111$
-                           00023A   784 	C$main.c$178$3_0$180	= .
-                                    785 	.globl	C$main.c$178$3_0$180
-                                    786 ;src/main.c:178: *turnaraoundMapValue = 128;
-      00023A 3E 80                  787 	ld	a, #0x80
-      00023C 02                     788 	ld	(bc), a
-      00023D 18 03                  789 	jr	00112$
-      00023F                        790 00111$:
-                           00023F   791 	C$main.c$182$3_0$181	= .
-                                    792 	.globl	C$main.c$182$3_0$181
-                                    793 ;src/main.c:182: *turnaraoundMapValue = HORIZONTAL_FLIP;
-      00023F 3E 20                  794 	ld	a, #0x20
-      000241 02                     795 	ld	(bc), a
-      000242                        796 00112$:
-                           000242   797 	C$main.c$185$2_0$179	= .
-                                    798 	.globl	C$main.c$185$2_0$179
-                                    799 ;src/main.c:185: snake.direction[0] = 0 * SNAKE_MOVEMENT_STEP;
-      000242 21r02r00               800 	ld	hl, #(_snake + 2)
-      000245 36 00                  801 	ld	(hl), #0x00
-                           000247   802 	C$main.c$186$2_0$179	= .
-                                    803 	.globl	C$main.c$186$2_0$179
-                                    804 ;src/main.c:186: snake.direction[1] = -1 * SNAKE_MOVEMENT_STEP;
-      000247 21r03r00               805 	ld	hl, #(_snake + 3)
-      00024A 36 F8                  806 	ld	(hl), #0xf8
-      00024C                        807 00126$:
-                           00024C   808 	C$main.c$188$1_0$169	= .
-                                    809 	.globl	C$main.c$188$1_0$169
-                                    810 ;src/main.c:188: if (joypadState & J_START)
-      00024C E5                     811 	push	hl
-      00024D F8 03                  812 	ldhl	sp,	#3
-      00024F CB 7E                  813 	bit	7, (hl)
-      000251 E1                     814 	pop	hl
-      000252 28 05                  815 	jr	Z, 00130$
-                           000254   816 	C$main.c$190$2_0$182	= .
-                                    817 	.globl	C$main.c$190$2_0$182
-                                    818 ;src/main.c:190: startGame();
-      000254 33                     819 	inc	sp
-      000255 33                     820 	inc	sp
-      000256 C3rE0r00               821 	jp	_startGame
-      000259                        822 00130$:
-                           000259   823 	C$main.c$192$1_0$169	= .
-                                    824 	.globl	C$main.c$192$1_0$169
-                                    825 ;src/main.c:192: }
-      000259 33                     826 	inc	sp
-      00025A 33                     827 	inc	sp
-                           00025B   828 	C$main.c$192$1_0$169	= .
-                                    829 	.globl	C$main.c$192$1_0$169
-                           00025B   830 	XG$controls_controller$0$0	= .
-                                    831 	.globl	XG$controls_controller$0$0
-      00025B C9                     832 	ret
-                           00025C   833 	G$gameover$0$0	= .
-                                    834 	.globl	G$gameover$0$0
-                           00025C   835 	C$main.c$194$1_0$183	= .
-                                    836 	.globl	C$main.c$194$1_0$183
-                                    837 ;src/main.c:194: void gameover()
-                                    838 ;	---------------------------------
-                                    839 ; Function gameover
-                                    840 ; ---------------------------------
-      00025C                        841 _gameover::
-                           00025C   842 	C$main.c$197$1_0$183	= .
-                                    843 	.globl	C$main.c$197$1_0$183
-                                    844 ;src/main.c:197: HIDE_SPRITES;
-      00025C F0r00                  845 	ldh	a, (_LCDC_REG + 0)
-      00025E E6 FD                  846 	and	a, #0xfd
-      000260 E0r00                  847 	ldh	(_LCDC_REG + 0), a
-                           000262   848 	C$main.c$198$1_0$183	= .
-                                    849 	.globl	C$main.c$198$1_0$183
-                                    850 ;src/main.c:198: }
-                           000262   851 	C$main.c$198$1_0$183	= .
-                                    852 	.globl	C$main.c$198$1_0$183
-                           000262   853 	XG$gameover$0$0	= .
-                                    854 	.globl	XG$gameover$0$0
-      000262 C9                     855 	ret
-                           000263   856 	G$moveSnake$0$0	= .
-                                    857 	.globl	G$moveSnake$0$0
-                           000263   858 	C$main.c$202$1_0$184	= .
-                                    859 	.globl	C$main.c$202$1_0$184
-                                    860 ;src/main.c:202: void moveSnake()
-                                    861 ;	---------------------------------
-                                    862 ; Function moveSnake
-                                    863 ; ---------------------------------
-      000263                        864 _moveSnake::
-      000263 E8 F5                  865 	add	sp, #-11
-                           000265   866 	C$main.c$204$1_0$184	= .
-                                    867 	.globl	C$main.c$204$1_0$184
-                                    868 ;src/main.c:204: time_t clockValue = clock();
-      000265 CDr00r00               869 	call	_clock
-                           000268   870 	C$main.c$205$1_0$184	= .
-                                    871 	.globl	C$main.c$205$1_0$184
-                                    872 ;src/main.c:205: UINT16 deltaTime = clockValue - lastTime;
-      000268 7B                     873 	ld	a, e
-      000269 21r04r00               874 	ld	hl, #_lastTime
-      00026C 96                     875 	sub	a, (hl)
-      00026D 23                     876 	inc	hl
-      00026E 4F                     877 	ld	c, a
-      00026F 7A                     878 	ld	a, d
-      000270 9E                     879 	sbc	a, (hl)
-                           000271   880 	C$main.c$206$1_0$184	= .
-                                    881 	.globl	C$main.c$206$1_0$184
-                                    882 ;src/main.c:206: lastTime = clockValue;
-      000271 2B                     883 	dec	hl
-      000272 47                     884 	ld	b, a
-      000273 7B                     885 	ld	a, e
-      000274 22                     886 	ld	(hl+), a
-      000275 72                     887 	ld	(hl), d
-                           000276   888 	C$main.c$207$1_0$184	= .
-                                    889 	.globl	C$main.c$207$1_0$184
-                                    890 ;src/main.c:207: timeCounter += deltaTime;
-      000276 21r06r00               891 	ld	hl, #_timeCounter
-      000279 7E                     892 	ld	a, (hl)
-      00027A 81                     893 	add	a, c
-      00027B 22                     894 	ld	(hl+), a
-      00027C 7E                     895 	ld	a, (hl)
-      00027D 88                     896 	adc	a, b
-      00027E 77                     897 	ld	(hl), a
-                           00027F   898 	C$main.c$209$1_0$184	= .
-                                    899 	.globl	C$main.c$209$1_0$184
-                                    900 ;src/main.c:209: if (timeCounter > speed[currentSpeed])
-      00027F 01r72r00               901 	ld	bc, #_speed+0
-      000282 21r00r00               902 	ld	hl, #_currentSpeed
-      000285 6E                     903 	ld	l, (hl)
-                                    904 ;	spillPairReg hl
-                                    905 ;	spillPairReg hl
-      000286 26 00                  906 	ld	h, #0x00
-                                    907 ;	spillPairReg hl
-                                    908 ;	spillPairReg hl
-      000288 29                     909 	add	hl, hl
-      000289 09                     910 	add	hl, bc
-      00028A 2A                     911 	ld	a, (hl+)
-      00028B 4F                     912 	ld	c, a
-      00028C 46                     913 	ld	b, (hl)
-      00028D 21r06r00               914 	ld	hl, #_timeCounter
-      000290 79                     915 	ld	a, c
-      000291 96                     916 	sub	a, (hl)
-      000292 23                     917 	inc	hl
-      000293 78                     918 	ld	a, b
-      000294 9E                     919 	sbc	a, (hl)
-      000295 D2rD8r05               920 	jp	NC, 00129$
-                           000298   921 	C$main.c$211$2_0$185	= .
-                                    922 	.globl	C$main.c$211$2_0$185
-                                    923 ;src/main.c:211: timeCounter = 0;
-      000298 AF                     924 	xor	a, a
-      000299 21r06r00               925 	ld	hl, #_timeCounter
-      00029C 22                     926 	ld	(hl+), a
-      00029D 77                     927 	ld	(hl), a
-                           00029E   928 	C$main.c$213$2_1$186	= .
-                                    929 	.globl	C$main.c$213$2_1$186
-                                    930 ;src/main.c:213: UINT8 prevX = snake.x;
-      00029E FAr00r00               931 	ld	a, (#_snake + 0)
-      0002A1 F8 08                  932 	ldhl	sp,	#8
-      0002A3 77                     933 	ld	(hl), a
-                           0002A4   934 	C$main.c$214$2_1$186	= .
-                                    935 	.globl	C$main.c$214$2_1$186
-                                    936 ;src/main.c:214: UINT8 prevY = snake.y;
-      0002A4 FAr01r00               937 	ld	a, (#(_snake + 1) + 0)
-      0002A7 F8 04                  938 	ldhl	sp,	#4
-      0002A9 77                     939 	ld	(hl), a
-                           0002AA   940 	C$main.c$216$2_1$186	= .
-                                    941 	.globl	C$main.c$216$2_1$186
-                                    942 ;src/main.c:216: snake.x += snake.direction[0];
-      0002AA 21r00r00               943 	ld	hl, #_snake
-      0002AD 4E                     944 	ld	c, (hl)
-      0002AE FAr02r00               945 	ld	a, (#(_snake + 2) + 0)
-      0002B1 81                     946 	add	a, c
-      0002B2 EAr00r00               947 	ld	(#_snake),a
-                           0002B5   948 	C$main.c$217$2_1$186	= .
-                                    949 	.globl	C$main.c$217$2_1$186
-                                    950 ;src/main.c:217: snake.y += snake.direction[1];
-      0002B5 21r01r00               951 	ld	hl, #(_snake + 1)
-      0002B8 4E                     952 	ld	c, (hl)
-      0002B9 FAr03r00               953 	ld	a, (#(_snake + 3) + 0)
-      0002BC 81                     954 	add	a, c
-      0002BD EAr01r00               955 	ld	(#(_snake + 1)),a
-                           0002C0   956 	C$main.c$220$2_1$186	= .
-                                    957 	.globl	C$main.c$220$2_1$186
-                                    958 ;src/main.c:220: turnaraoundMap[snake.x / 8][snake.y / 8] = 0;
-      0002C0 FAr00r00               959 	ld	a, (#_snake + 0)
-      0002C3 4F                     960 	ld	c, a
-      0002C4 06 00                  961 	ld	b, #0x00
-      0002C6 69                     962 	ld	l, c
-                                    963 ;	spillPairReg hl
-                                    964 ;	spillPairReg hl
-      0002C7 60                     965 	ld	h, b
-                                    966 ;	spillPairReg hl
-                                    967 ;	spillPairReg hl
-      0002C8 CB 78                  968 	bit	7, b
-      0002CA 28 04                  969 	jr	Z, 00131$
-      0002CC 21 07 00               970 	ld	hl, #0x0007
-      0002CF 09                     971 	add	hl, bc
-      0002D0                        972 00131$:
-      0002D0 CB 2C                  973 	sra	h
-      0002D2 CB 1D                  974 	rr	l
-      0002D4 CB 2C                  975 	sra	h
-      0002D6 CB 1D                  976 	rr	l
-      0002D8 CB 2C                  977 	sra	h
-      0002DA CB 1D                  978 	rr	l
-      0002DC 4D                     979 	ld	c, l
-      0002DD 44                     980 	ld	b, h
-      0002DE 29                     981 	add	hl, hl
-      0002DF 09                     982 	add	hl, bc
-      0002E0 29                     983 	add	hl, hl
-      0002E1 29                     984 	add	hl, hl
-      0002E2 29                     985 	add	hl, hl
-      0002E3 09                     986 	add	hl, bc
-      0002E4 01r02r00               987 	ld	bc,#_turnaraoundMap
-      0002E7 09                     988 	add	hl,bc
-      0002E8 E5                     989 	push	hl
-      0002E9 7D                     990 	ld	a, l
-      0002EA F8 08                  991 	ldhl	sp,	#8
-      0002EC 77                     992 	ld	(hl), a
-      0002ED E1                     993 	pop	hl
-      0002EE 7C                     994 	ld	a, h
-      0002EF F8 07                  995 	ldhl	sp,	#7
-      0002F1 22                     996 	ld	(hl+), a
-      0002F2 23                     997 	inc	hl
-      0002F3 FAr01r00               998 	ld	a, (#(_snake + 1) + 0)
-      0002F6 4F                     999 	ld	c, a
-      0002F7 06 00                 1000 	ld	b, #0x00
-      0002F9 79                    1001 	ld	a, c
-      0002FA 22                    1002 	ld	(hl+), a
-      0002FB 70                    1003 	ld	(hl), b
-      0002FC CB 78                 1004 	bit	7, b
-      0002FE 28 0E                 1005 	jr	Z, 00132$
-      000300 21 07 00              1006 	ld	hl, #0x0007
-      000303 09                    1007 	add	hl, bc
-      000304 E5                    1008 	push	hl
-      000305 7D                    1009 	ld	a, l
-      000306 F8 0B                 1010 	ldhl	sp,	#11
-      000308 77                    1011 	ld	(hl), a
-      000309 E1                    1012 	pop	hl
-      00030A 7C                    1013 	ld	a, h
-      00030B F8 0A                 1014 	ldhl	sp,	#10
-      00030D 77                    1015 	ld	(hl), a
-      00030E                       1016 00132$:
-      00030E F8 09                 1017 	ldhl	sp,#9
-      000310 2A                    1018 	ld	a, (hl+)
-      000311 4F                    1019 	ld	c, a
-      000312 46                    1020 	ld	b, (hl)
-      000313 CB 28                 1021 	sra	b
-      000315 CB 19                 1022 	rr	c
-      000317 CB 28                 1023 	sra	b
-      000319 CB 19                 1024 	rr	c
-      00031B CB 28                 1025 	sra	b
-      00031D CB 19                 1026 	rr	c
-      00031F F8 06                 1027 	ldhl	sp,	#6
-      000321 2A                    1028 	ld	a,	(hl+)
-      000322 66                    1029 	ld	h, (hl)
-      000323 6F                    1030 	ld	l, a
-      000324 09                    1031 	add	hl, bc
-      000325 4D                    1032 	ld	c, l
-      000326 44                    1033 	ld	b, h
-      000327 AF                    1034 	xor	a, a
-      000328 02                    1035 	ld	(bc), a
-                           000329  1036 	C$main.c$222$2_2$187	= .
-                                   1037 	.globl	C$main.c$222$2_2$187
-                                   1038 ;src/main.c:222: uint8_t nextTileIndex = get_bkg_tile_xy((snake.x / 8) - 1, (snake.y / 8) - 2);
-      000329 FAr01r00              1039 	ld	a, (#(_snake + 1) + 0)
-      00032C 4F                    1040 	ld	c, a
-      00032D 06 00                 1041 	ld	b, #0x00
-      00032F 69                    1042 	ld	l, c
-                                   1043 ;	spillPairReg hl
-                                   1044 ;	spillPairReg hl
-      000330 60                    1045 	ld	h, b
-                                   1046 ;	spillPairReg hl
-                                   1047 ;	spillPairReg hl
-      000331 CB 78                 1048 	bit	7, b
-      000333 28 04                 1049 	jr	Z, 00133$
-      000335 21 07 00              1050 	ld	hl, #0x0007
-      000338 09                    1051 	add	hl, bc
-      000339                       1052 00133$:
-      000339 CB 2C                 1053 	sra	h
-      00033B CB 1D                 1054 	rr	l
-      00033D CB 2C                 1055 	sra	h
-      00033F CB 1D                 1056 	rr	l
-      000341 CB 2C                 1057 	sra	h
-      000343 CB 1D                 1058 	rr	l
-      000345 7D                    1059 	ld	a, l
-      000346 C6 FE                 1060 	add	a, #0xfe
-      000348 F8 07                 1061 	ldhl	sp,	#7
-      00034A 22                    1062 	ld	(hl+), a
-      00034B 23                    1063 	inc	hl
-      00034C FAr00r00              1064 	ld	a, (#_snake + 0)
-      00034F 4F                    1065 	ld	c, a
-      000350 06 00                 1066 	ld	b, #0x00
-      000352 79                    1067 	ld	a, c
-      000353 22                    1068 	ld	(hl+), a
-      000354 70                    1069 	ld	(hl), b
-      000355 CB 78                 1070 	bit	7, b
-      000357 28 0E                 1071 	jr	Z, 00134$
-      000359 21 07 00              1072 	ld	hl, #0x0007
-      00035C 09                    1073 	add	hl, bc
-      00035D E5                    1074 	push	hl
-      00035E 7D                    1075 	ld	a, l
-      00035F F8 0B                 1076 	ldhl	sp,	#11
-      000361 77                    1077 	ld	(hl), a
-      000362 E1                    1078 	pop	hl
-      000363 7C                    1079 	ld	a, h
-      000364 F8 0A                 1080 	ldhl	sp,	#10
-      000366 77                    1081 	ld	(hl), a
-      000367                       1082 00134$:
-      000367 F8 09                 1083 	ldhl	sp,	#9
-      000369 2A                    1084 	ld	a, (hl+)
-      00036A 47                    1085 	ld	b, a
-      00036B 4E                    1086 	ld	c, (hl)
-      00036C CB 29                 1087 	sra	c
-      00036E CB 18                 1088 	rr	b
-      000370 CB 29                 1089 	sra	c
-      000372 CB 18                 1090 	rr	b
-      000374 CB 29                 1091 	sra	c
-      000376 CB 18                 1092 	rr	b
-      000378 05                    1093 	dec	b
-      000379 F8 07                 1094 	ldhl	sp,	#7
-      00037B 7E                    1095 	ld	a, (hl)
-      00037C F5                    1096 	push	af
-      00037D 33                    1097 	inc	sp
-      00037E C5                    1098 	push	bc
-      00037F 33                    1099 	inc	sp
-      000380 CDr00r00              1100 	call	_get_bkg_tile_xy
-      000383 E1                    1101 	pop	hl
-                           000384  1102 	C$main.c$225$2_2$187	= .
-                                   1103 	.globl	C$main.c$225$2_2$187
-                                   1104 ;src/main.c:225: if (nextTileIndex >= 1u && nextTileIndex <= 9u)
-      000384 7B                    1105 	ld	a, e
-      000385 D6 01                 1106 	sub	a, #0x01
-      000387 38 08                 1107 	jr	C, 00102$
-      000389 3E 09                 1108 	ld	a, #0x09
-      00038B 93                    1109 	sub	a, e
-      00038C 38 03                 1110 	jr	C, 00102$
-                           00038E  1111 	C$main.c$227$3_2$188	= .
-                                   1112 	.globl	C$main.c$227$3_2$188
-                                   1113 ;src/main.c:227: gameover();
-      00038E CDr5Cr02              1114 	call	_gameover
-      000391                       1115 00102$:
-                                   1116 ;src/main.c:230: set_sprite_tile(SNAKE_H_SPRITE_INDEX, snakeHeadSpriteIndex);
-      000391 21r03r00              1117 	ld	hl, #_snakeHeadSpriteIndex
-      000394 4E                    1118 	ld	c, (hl)
-                                   1119 ;/opt/gbdk/include/gb/gb.h:1314: shadow_OAM[nb].tile=tile;
-      000395 21r02r00              1120 	ld	hl, #(_shadow_OAM + 2)
-      000398 71                    1121 	ld	(hl), c
-                                   1122 ;src/main.c:231: set_sprite_prop(SNAKE_H_SPRITE_INDEX, snakeHeadspriteProp);
-      000399 21r02r00              1123 	ld	hl, #_snakeHeadspriteProp
-      00039C 4E                    1124 	ld	c, (hl)
-                                   1125 ;/opt/gbdk/include/gb/gb.h:1360: shadow_OAM[nb].prop=prop;
-      00039D 21r03r00              1126 	ld	hl, #(_shadow_OAM + 3)
-      0003A0 71                    1127 	ld	(hl), c
-                                   1128 ;src/main.c:233: move_sprite(SNAKE_H_SPRITE_INDEX, snake.x, snake.y);
-      0003A1 21r01r00              1129 	ld	hl, #(_snake + 1)
-      0003A4 46                    1130 	ld	b, (hl)
-      0003A5 21r00r00              1131 	ld	hl, #_snake
-      0003A8 4E                    1132 	ld	c, (hl)
-                                   1133 ;/opt/gbdk/include/gb/gb.h:1387: OAM_item_t * itm = &shadow_OAM[nb];
-      0003A9 21r00r00              1134 	ld	hl, #_shadow_OAM
-                                   1135 ;/opt/gbdk/include/gb/gb.h:1388: itm->y=y, itm->x=x;
-      0003AC 78                    1136 	ld	a, b
-      0003AD 22                    1137 	ld	(hl+), a
-      0003AE 71                    1138 	ld	(hl), c
-                           0003AF  1139 	C$main.c$235$4_2$190	= .
-                                   1140 	.globl	C$main.c$235$4_2$190
-                                   1141 ;src/main.c:235: for (int i = 0; i < snake.tailLength; i++)
-      0003AF AF                    1142 	xor	a, a
-      0003B0 F8 09                 1143 	ldhl	sp,	#9
-      0003B2 22                    1144 	ld	(hl+), a
-      0003B3 77                    1145 	ld	(hl), a
-      0003B4                       1146 00127$:
-      0003B4 FAr55r00              1147 	ld	a, (#(_snake + 85) + 0)
-      0003B7 4F                    1148 	ld	c, a
-      0003B8 06 00                 1149 	ld	b, #0x00
-      0003BA F8 09                 1150 	ldhl	sp,	#9
-      0003BC 2A                    1151 	ld	a, (hl+)
-      0003BD 91                    1152 	sub	a, c
-      0003BE 7E                    1153 	ld	a, (hl)
-      0003BF 98                    1154 	sbc	a, b
-      0003C0 56                    1155 	ld	d, (hl)
-      0003C1 78                    1156 	ld	a, b
-      0003C2 CB 7F                 1157 	bit	7,a
-      0003C4 28 07                 1158 	jr	Z, 00223$
-      0003C6 CB 7A                 1159 	bit	7, d
-      0003C8 20 08                 1160 	jr	NZ, 00224$
-      0003CA BF                    1161 	cp	a, a
-      0003CB 18 05                 1162 	jr	00224$
-      0003CD                       1163 00223$:
-      0003CD CB 7A                 1164 	bit	7, d
-      0003CF 28 01                 1165 	jr	Z, 00224$
-      0003D1 37                    1166 	scf
-      0003D2                       1167 00224$:
-      0003D2 D2rD8r05              1168 	jp	NC, 00129$
-                           0003D5  1169 	C$main.c$237$1_0$184	= .
-                                   1170 	.globl	C$main.c$237$1_0$184
-                                   1171 ;src/main.c:237: UINT8 currentX = snake.tail[i].x;
-      0003D5 F8 09                 1172 	ldhl	sp,	#9
-      0003D7 2A                    1173 	ld	a, (hl+)
-      0003D8 46                    1174 	ld	b, (hl)
-      0003D9 87                    1175 	add	a, a
-      0003DA CB 10                 1176 	rl	b
-      0003DC C6r04                 1177 	add	a, #<((_snake + 4))
-      0003DE 4F                    1178 	ld	c, a
-      0003DF 78                    1179 	ld	a, b
-      0003E0 CEs00                 1180 	adc	a, #>((_snake + 4))
-      0003E2 47                    1181 	ld	b, a
-      0003E3 0A                    1182 	ld	a, (bc)
-      0003E4 F8 00                 1183 	ldhl	sp,	#0
-      0003E6 77                    1184 	ld	(hl), a
-                           0003E7  1185 	C$main.c$238$1_0$184	= .
-                                   1186 	.globl	C$main.c$238$1_0$184
-                                   1187 ;src/main.c:238: UINT8 currentY = snake.tail[i].y;
-      0003E7 69                    1188 	ld	l, c
-      0003E8 60                    1189 	ld	h, b
-      0003E9 23                    1190 	inc	hl
-      0003EA E5                    1191 	push	hl
-      0003EB 7D                    1192 	ld	a, l
-      0003EC F8 07                 1193 	ldhl	sp,	#7
-      0003EE 77                    1194 	ld	(hl), a
-      0003EF E1                    1195 	pop	hl
-      0003F0 7C                    1196 	ld	a, h
-      0003F1 F8 06                 1197 	ldhl	sp,	#6
-      0003F3 32                    1198 	ld	(hl-), a
-      0003F4 2A                    1199 	ld	a, (hl+)
-      0003F5 5F                    1200 	ld	e, a
-      0003F6 56                    1201 	ld	d, (hl)
-      0003F7 1A                    1202 	ld	a, (de)
-      0003F8 F8 01                 1203 	ldhl	sp,	#1
-      0003FA 77                    1204 	ld	(hl), a
-                           0003FB  1205 	C$main.c$240$4_2$190	= .
-                                   1206 	.globl	C$main.c$240$4_2$190
-                                   1207 ;src/main.c:240: if (currentX == snake.x && currentY == snake.y)
-      0003FB FAr00r00              1208 	ld	a, (#_snake + 0)
-      0003FE F8 07                 1209 	ldhl	sp,	#7
-      000400 77                    1210 	ld	(hl), a
-      000401 F8 00                 1211 	ldhl	sp,	#0
-      000403 7E                    1212 	ld	a, (hl)
-      000404 F8 07                 1213 	ldhl	sp,	#7
-      000406 96                    1214 	sub	a, (hl)
-      000407 20 13                 1215 	jr	NZ, 00105$
-      000409 FAr01r00              1216 	ld	a, (#(_snake + 1) + 0)
-      00040C F8 07                 1217 	ldhl	sp,	#7
-      00040E 77                    1218 	ld	(hl), a
-      00040F F8 01                 1219 	ldhl	sp,	#1
-      000411 7E                    1220 	ld	a, (hl)
-      000412 F8 07                 1221 	ldhl	sp,	#7
-      000414 96                    1222 	sub	a, (hl)
-      000415 20 05                 1223 	jr	NZ, 00105$
-                           000417  1224 	C$main.c$242$5_2$191	= .
-                                   1225 	.globl	C$main.c$242$5_2$191
-                                   1226 ;src/main.c:242: gameover();
-      000417 C5                    1227 	push	bc
-      000418 CDr5Cr02              1228 	call	_gameover
-      00041B C1                    1229 	pop	bc
-      00041C                       1230 00105$:
-                           00041C  1231 	C$main.c$245$4_2$190	= .
-                                   1232 	.globl	C$main.c$245$4_2$190
-                                   1233 ;src/main.c:245: snake.tail[i].x = prevX;
-      00041C F8 08                 1234 	ldhl	sp,	#8
-                           00041E  1235 	C$main.c$246$4_2$190	= .
-                                   1236 	.globl	C$main.c$246$4_2$190
-                                   1237 ;src/main.c:246: snake.tail[i].y = prevY;
-      00041E 3A                    1238 	ld	a, (hl-)
-      00041F 2B                    1239 	dec	hl
-      000420 2B                    1240 	dec	hl
-      000421 02                    1241 	ld	(bc), a
-      000422 2A                    1242 	ld	a, (hl+)
-      000423 5F                    1243 	ld	e, a
-      000424 3A                    1244 	ld	a, (hl-)
-      000425 2B                    1245 	dec	hl
-      000426 57                    1246 	ld	d, a
-      000427 7E                    1247 	ld	a, (hl)
-      000428 12                    1248 	ld	(de), a
-                           000429  1249 	C$main.c$248$4_3$192	= .
-                                   1250 	.globl	C$main.c$248$4_3$192
-                                   1251 ;src/main.c:248: uint8_t tail_sprite_prop = turnaraoundMap[snake.tail[i].x / 8][snake.tail[i].y / 8];
-      000429 F8 08                 1252 	ldhl	sp,	#8
-      00042B 7E                    1253 	ld	a, (hl)
-      00042C F8 03                 1254 	ldhl	sp,	#3
-      00042E 22                    1255 	ld	(hl+), a
-      00042F AF                    1256 	xor	a, a
-      000430 32                    1257 	ld	(hl-), a
-      000431 2A                    1258 	ld	a, (hl+)
-      000432 4F                    1259 	ld	c, a
-      000433 46                    1260 	ld	b, (hl)
-      000434 CB 7E                 1261 	bit	7, (hl)
-      000436 28 0A                 1262 	jr	Z, 00135$
-      000438 2B                    1263 	dec	hl
-      000439 2A                    1264 	ld	a, (hl+)
-      00043A 5F                    1265 	ld	e, a
-      00043B 56                    1266 	ld	d, (hl)
-      00043C 21 07 00              1267 	ld	hl, #0x0007
-      00043F 19                    1268 	add	hl, de
-      000440 4D                    1269 	ld	c, l
-      000441 44                    1270 	ld	b, h
-      000442                       1271 00135$:
-      000442 CB 28                 1272 	sra	b
-      000444 CB 19                 1273 	rr	c
-      000446 CB 28                 1274 	sra	b
-      000448 CB 19                 1275 	rr	c
-      00044A CB 28                 1276 	sra	b
-      00044C CB 19                 1277 	rr	c
-      00044E 69                    1278 	ld	l, c
-      00044F 60                    1279 	ld	h, b
-      000450 29                    1280 	add	hl, hl
-      000451 09                    1281 	add	hl, bc
-      000452 29                    1282 	add	hl, hl
-      000453 29                    1283 	add	hl, hl
-      000454 29                    1284 	add	hl, hl
-      000455 09                    1285 	add	hl, bc
-      000456 01r02r00              1286 	ld	bc,#_turnaraoundMap
-      000459 09                    1287 	add	hl,bc
-      00045A 4D                    1288 	ld	c, l
-      00045B 44                    1289 	ld	b, h
-      00045C F8 05                 1290 	ldhl	sp,#5
-      00045E 2A                    1291 	ld	a, (hl+)
-      00045F 5F                    1292 	ld	e, a
-      000460 3A                    1293 	ld	a, (hl-)
-      000461 2B                    1294 	dec	hl
-      000462 57                    1295 	ld	d, a
-      000463 1A                    1296 	ld	a, (de)
-      000464 22                    1297 	ld	(hl+), a
-      000465 AF                    1298 	xor	a, a
-      000466 32                    1299 	ld	(hl-), a
-      000467 2A                    1300 	ld	a, (hl+)
-      000468 23                    1301 	inc	hl
-      000469 32                    1302 	ld	(hl-), a
-      00046A 2A                    1303 	ld	a, (hl+)
-      00046B 23                    1304 	inc	hl
-      00046C 32                    1305 	ld	(hl-), a
-      00046D 2B                    1306 	dec	hl
-      00046E CB 7E                 1307 	bit	7, (hl)
-      000470 28 12                 1308 	jr	Z, 00136$
-      000472 2B                    1309 	dec	hl
-      000473 2A                    1310 	ld	a, (hl+)
-      000474 5F                    1311 	ld	e, a
-      000475 56                    1312 	ld	d, (hl)
-      000476 21 07 00              1313 	ld	hl, #0x0007
-      000479 19                    1314 	add	hl, de
-      00047A E5                    1315 	push	hl
-      00047B 7D                    1316 	ld	a, l
-      00047C F8 08                 1317 	ldhl	sp,	#8
-      00047E 77                    1318 	ld	(hl), a
-      00047F E1                    1319 	pop	hl
-      000480 7C                    1320 	ld	a, h
-      000481 F8 07                 1321 	ldhl	sp,	#7
-      000483 77                    1322 	ld	(hl), a
-      000484                       1323 00136$:
-      000484 F8 06                 1324 	ldhl	sp,#6
-      000486 2A                    1325 	ld	a, (hl+)
-      000487 5F                    1326 	ld	e, a
-      000488 56                    1327 	ld	d, (hl)
-      000489 CB 2A                 1328 	sra	d
-      00048B CB 1B                 1329 	rr	e
-      00048D CB 2A                 1330 	sra	d
-      00048F CB 1B                 1331 	rr	e
-      000491 CB 2A                 1332 	sra	d
-      000493 CB 1B                 1333 	rr	e
-      000495 6B                    1334 	ld	l, e
-      000496 62                    1335 	ld	h, d
-      000497 09                    1336 	add	hl, bc
-      000498 7E                    1337 	ld	a, (hl)
-      000499 F8 02                 1338 	ldhl	sp,	#2
-      00049B 77                    1339 	ld	(hl), a
-                           00049C  1340 	C$main.c$249$4_3$192	= .
-                                   1341 	.globl	C$main.c$249$4_3$192
-                                   1342 ;src/main.c:249: uint8_t spriteToUse = 2u;
-      00049C F8 03                 1343 	ldhl	sp,	#3
-                           00049E  1344 	C$main.c$250$4_3$192	= .
-                                   1345 	.globl	C$main.c$250$4_3$192
-                                   1346 ;src/main.c:250: if (tail_sprite_prop != 0)
-      00049E 3E 02                 1347 	ld	a, #0x02
-      0004A0 32                    1348 	ld	(hl-), a
-      0004A1 7E                    1349 	ld	a, (hl)
-      0004A2 B7                    1350 	or	a, a
-      0004A3 28 05                 1351 	jr	Z, 00113$
-                           0004A5  1352 	C$main.c$252$5_3$193	= .
-                                   1353 	.globl	C$main.c$252$5_3$193
-                                   1354 ;src/main.c:252: spriteToUse = 4u;
-      0004A5 23                    1355 	inc	hl
-      0004A6 36 04                 1356 	ld	(hl), #0x04
-      0004A8 18 1B                 1357 	jr	00114$
-      0004AA                       1358 00113$:
-                           0004AA  1359 	C$main.c$254$4_3$192	= .
-                                   1360 	.globl	C$main.c$254$4_3$192
-                                   1361 ;src/main.c:254: else if (currentX == prevX)
-      0004AA F8 00                 1362 	ldhl	sp,	#0
-      0004AC 7E                    1363 	ld	a, (hl)
-      0004AD F8 08                 1364 	ldhl	sp,	#8
-      0004AF 96                    1365 	sub	a, (hl)
-      0004B0 20 06                 1366 	jr	NZ, 00110$
-                           0004B2  1367 	C$main.c$256$5_3$194	= .
-                                   1368 	.globl	C$main.c$256$5_3$194
-                                   1369 ;src/main.c:256: spriteToUse = 6u;
-      0004B2 F8 03                 1370 	ldhl	sp,	#3
-      0004B4 36 06                 1371 	ld	(hl), #0x06
-      0004B6 18 0D                 1372 	jr	00114$
-      0004B8                       1373 00110$:
-                           0004B8  1374 	C$main.c$258$4_3$192	= .
-                                   1375 	.globl	C$main.c$258$4_3$192
-                                   1376 ;src/main.c:258: else if (currentX == 99)
-      0004B8 F8 00                 1377 	ldhl	sp,	#0
-      0004BA 7E                    1378 	ld	a, (hl)
-      0004BB D6 63                 1379 	sub	a, #0x63
-      0004BD 20 06                 1380 	jr	NZ, 00114$
-                           0004BF  1381 	C$main.c$260$5_3$195	= .
-                                   1382 	.globl	C$main.c$260$5_3$195
-                                   1383 ;src/main.c:260: spriteToUse = snake.lastUsedTailIndex;
-      0004BF FAr54r00              1384 	ld	a, (#(_snake + 84) + 0)
-      0004C2 F8 03                 1385 	ldhl	sp,	#3
-      0004C4 77                    1386 	ld	(hl), a
-      0004C5                       1387 00114$:
-                           0004C5  1388 	C$main.c$263$4_3$192	= .
-                                   1389 	.globl	C$main.c$263$4_3$192
-                                   1390 ;src/main.c:263: if (i == snake.tailLength - 1)
-      0004C5 FAr55r00              1391 	ld	a, (#(_snake + 85) + 0)
-      0004C8 06 00                 1392 	ld	b, #0x00
-      0004CA 4F                    1393 	ld	c, a
-      0004CB 0B                    1394 	dec	bc
-      0004CC F8 09                 1395 	ldhl	sp,	#9
-      0004CE 7E                    1396 	ld	a, (hl)
-      0004CF 91                    1397 	sub	a, c
-      0004D0 20 0C                 1398 	jr	NZ, 00116$
-      0004D2 23                    1399 	inc	hl
-      0004D3 7E                    1400 	ld	a, (hl)
-      0004D4 90                    1401 	sub	a, b
-      0004D5 20 07                 1402 	jr	NZ, 00116$
-                           0004D7  1403 	C$main.c$265$5_3$196	= .
-                                   1404 	.globl	C$main.c$265$5_3$196
-                                   1405 ;src/main.c:265: snake.lastUsedTailIndex = spriteToUse;
-      0004D7 11r54r00              1406 	ld	de, #(_snake + 84)
-      0004DA F8 03                 1407 	ldhl	sp,	#3
-      0004DC 7E                    1408 	ld	a, (hl)
-      0004DD 12                    1409 	ld	(de), a
-      0004DE                       1410 00116$:
-                                   1411 ;src/main.c:268: set_sprite_tile(i + 7u, spriteToUse);
-      0004DE F8 09                 1412 	ldhl	sp,	#9
-      0004E0 7E                    1413 	ld	a, (hl)
-      0004E1 C6 07                 1414 	add	a, #0x07
-      0004E3 F8 04                 1415 	ldhl	sp,	#4
-      0004E5 77                    1416 	ld	(hl), a
-      0004E6 4E                    1417 	ld	c, (hl)
-                                   1418 ;/opt/gbdk/include/gb/gb.h:1314: shadow_OAM[nb].tile=tile;
-      0004E7 F8 07                 1419 	ldhl	sp,	#7
-      0004E9 79                    1420 	ld	a, c
-      0004EA 22                    1421 	ld	(hl+), a
-      0004EB 36 00                 1422 	ld	(hl), #0x00
-      0004ED 3E 02                 1423 	ld	a, #0x02
-      0004EF                       1424 00236$:
-      0004EF F8 07                 1425 	ldhl	sp,	#7
-      0004F1 CB 26                 1426 	sla	(hl)
-      0004F3 23                    1427 	inc	hl
-      0004F4 CB 16                 1428 	rl	(hl)
-      0004F6 3D                    1429 	dec	a
-      0004F7 20 F6                 1430 	jr	NZ, 00236$
-      0004F9 2B                    1431 	dec	hl
-      0004FA 2A                    1432 	ld	a, (hl+)
-      0004FB 5F                    1433 	ld	e, a
-      0004FC 56                    1434 	ld	d, (hl)
-      0004FD 21r00r00              1435 	ld	hl, #_shadow_OAM
-      000500 19                    1436 	add	hl, de
-      000501 E5                    1437 	push	hl
-      000502 7D                    1438 	ld	a, l
-      000503 F8 07                 1439 	ldhl	sp,	#7
-      000505 77                    1440 	ld	(hl), a
-      000506 E1                    1441 	pop	hl
-      000507 7C                    1442 	ld	a, h
-      000508 F8 06                 1443 	ldhl	sp,	#6
-      00050A 32                    1444 	ld	(hl-), a
-      00050B 2A                    1445 	ld	a, (hl+)
-      00050C 5F                    1446 	ld	e, a
-      00050D 56                    1447 	ld	d, (hl)
-      00050E 21 02 00              1448 	ld	hl, #0x0002
-      000511 19                    1449 	add	hl, de
-      000512 E5                    1450 	push	hl
-      000513 7D                    1451 	ld	a, l
-      000514 F8 09                 1452 	ldhl	sp,	#9
-      000516 77                    1453 	ld	(hl), a
-      000517 E1                    1454 	pop	hl
-      000518 7C                    1455 	ld	a, h
-      000519 F8 08                 1456 	ldhl	sp,	#8
-      00051B 32                    1457 	ld	(hl-), a
-      00051C 2A                    1458 	ld	a, (hl+)
-      00051D 5F                    1459 	ld	e, a
-      00051E 56                    1460 	ld	d, (hl)
-      00051F F8 03                 1461 	ldhl	sp,	#3
-                                   1462 ;src/main.c:269: set_sprite_prop(i + 7u, tail_sprite_prop);
-      000521 2A                    1463 	ld	a, (hl+)
-      000522 12                    1464 	ld	(de), a
-      000523 4E                    1465 	ld	c, (hl)
-                                   1466 ;/opt/gbdk/include/gb/gb.h:1360: shadow_OAM[nb].prop=prop;
-      000524 F8 07                 1467 	ldhl	sp,	#7
-      000526 79                    1468 	ld	a, c
-      000527 22                    1469 	ld	(hl+), a
-      000528 36 00                 1470 	ld	(hl), #0x00
-      00052A 3E 02                 1471 	ld	a, #0x02
-      00052C                       1472 00237$:
-      00052C F8 07                 1473 	ldhl	sp,	#7
-      00052E CB 26                 1474 	sla	(hl)
-      000530 23                    1475 	inc	hl
-      000531 CB 16                 1476 	rl	(hl)
-      000533 3D                    1477 	dec	a
-      000534 20 F6                 1478 	jr	NZ, 00237$
-      000536 2B                    1479 	dec	hl
-      000537 2A                    1480 	ld	a, (hl+)
-      000538 5F                    1481 	ld	e, a
-      000539 56                    1482 	ld	d, (hl)
-      00053A 21r00r00              1483 	ld	hl, #_shadow_OAM
-      00053D 19                    1484 	add	hl, de
-      00053E E5                    1485 	push	hl
-      00053F 7D                    1486 	ld	a, l
-      000540 F8 07                 1487 	ldhl	sp,	#7
-      000542 77                    1488 	ld	(hl), a
-      000543 E1                    1489 	pop	hl
-      000544 7C                    1490 	ld	a, h
-      000545 F8 06                 1491 	ldhl	sp,	#6
-      000547 32                    1492 	ld	(hl-), a
-      000548 2A                    1493 	ld	a, (hl+)
-      000549 5F                    1494 	ld	e, a
-      00054A 56                    1495 	ld	d, (hl)
-      00054B 21 03 00              1496 	ld	hl, #0x0003
-      00054E 19                    1497 	add	hl, de
-      00054F E5                    1498 	push	hl
-      000550 7D                    1499 	ld	a, l
-      000551 F8 09                 1500 	ldhl	sp,	#9
-      000553 77                    1501 	ld	(hl), a
-      000554 E1                    1502 	pop	hl
-      000555 7C                    1503 	ld	a, h
-      000556 F8 08                 1504 	ldhl	sp,	#8
-      000558 32                    1505 	ld	(hl-), a
-      000559 2A                    1506 	ld	a, (hl+)
-      00055A 5F                    1507 	ld	e, a
-      00055B 56                    1508 	ld	d, (hl)
-      00055C F8 02                 1509 	ldhl	sp,	#2
-      00055E 7E                    1510 	ld	a, (hl)
-      00055F 12                    1511 	ld	(de), a
-                                   1512 ;src/main.c:270: move_sprite(i + 7u, snake.tail[i].x, snake.tail[i].y);
-      000560 F8 09                 1513 	ldhl	sp,	#9
-      000562 2A                    1514 	ld	a, (hl+)
-      000563 4E                    1515 	ld	c, (hl)
-      000564 87                    1516 	add	a, a
-      000565 CB 11                 1517 	rl	c
-      000567 C6r04                 1518 	add	a, #<((_snake + 4))
-      000569 5F                    1519 	ld	e, a
-      00056A 79                    1520 	ld	a, c
-      00056B CEs00                 1521 	adc	a, #>((_snake + 4))
-      00056D 57                    1522 	ld	d, a
-      00056E 4B                    1523 	ld	c, e
-      00056F 42                    1524 	ld	b, d
-      000570 03                    1525 	inc	bc
-      000571 0A                    1526 	ld	a, (bc)
-      000572 F8 07                 1527 	ldhl	sp,	#7
-      000574 22                    1528 	ld	(hl+), a
-      000575 1A                    1529 	ld	a, (de)
-      000576 77                    1530 	ld	(hl), a
-      000577 F8 04                 1531 	ldhl	sp,	#4
-                                   1532 ;/opt/gbdk/include/gb/gb.h:1387: OAM_item_t * itm = &shadow_OAM[nb];
-      000579 2A                    1533 	ld	a, (hl+)
-      00057A 22                    1534 	ld	(hl+), a
-      00057B AF                    1535 	xor	a, a
-      00057C 32                    1536 	ld	(hl-), a
-      00057D 3A                    1537 	ld	a, (hl-)
-      00057E 2B                    1538 	dec	hl
-      00057F 77                    1539 	ld	(hl), a
-      000580 F8 06                 1540 	ldhl	sp,	#6
-      000582 3A                    1541 	ld	a, (hl-)
-      000583 2B                    1542 	dec	hl
-      000584 77                    1543 	ld	(hl), a
-      000585 3E 02                 1544 	ld	a, #0x02
-      000587                       1545 00239$:
-      000587 F8 03                 1546 	ldhl	sp,	#3
-      000589 CB 26                 1547 	sla	(hl)
-      00058B 23                    1548 	inc	hl
-      00058C CB 16                 1549 	rl	(hl)
-      00058E 3D                    1550 	dec	a
-      00058F 20 F6                 1551 	jr	NZ, 00239$
-      000591 2B                    1552 	dec	hl
-      000592 2A                    1553 	ld	a, (hl+)
-      000593 5F                    1554 	ld	e, a
-      000594 56                    1555 	ld	d, (hl)
-      000595 21r00r00              1556 	ld	hl, #_shadow_OAM
-      000598 19                    1557 	add	hl, de
-      000599 E5                    1558 	push	hl
-      00059A 7D                    1559 	ld	a, l
-      00059B F8 07                 1560 	ldhl	sp,	#7
-      00059D 77                    1561 	ld	(hl), a
-      00059E E1                    1562 	pop	hl
-      00059F 7C                    1563 	ld	a, h
-      0005A0 F8 06                 1564 	ldhl	sp,	#6
-                                   1565 ;/opt/gbdk/include/gb/gb.h:1388: itm->y=y, itm->x=x;
-      0005A2 32                    1566 	ld	(hl-), a
-      0005A3 2A                    1567 	ld	a, (hl+)
-      0005A4 5F                    1568 	ld	e, a
-      0005A5 2A                    1569 	ld	a, (hl+)
-      0005A6 57                    1570 	ld	d, a
-      0005A7 3A                    1571 	ld	a, (hl-)
-      0005A8 2B                    1572 	dec	hl
-      0005A9 12                    1573 	ld	(de), a
-      0005AA 2A                    1574 	ld	a, (hl+)
-      0005AB 5F                    1575 	ld	e, a
-      0005AC 56                    1576 	ld	d, (hl)
-      0005AD 6B                    1577 	ld	l, e
-      0005AE 62                    1578 	ld	h, d
-      0005AF 23                    1579 	inc	hl
-      0005B0 E5                    1580 	push	hl
-      0005B1 7D                    1581 	ld	a, l
-      0005B2 F8 05                 1582 	ldhl	sp,	#5
-      0005B4 77                    1583 	ld	(hl), a
-      0005B5 E1                    1584 	pop	hl
-      0005B6 7C                    1585 	ld	a, h
-      0005B7 F8 04                 1586 	ldhl	sp,	#4
-      0005B9 32                    1587 	ld	(hl-), a
-      0005BA 2A                    1588 	ld	a, (hl+)
-      0005BB 5F                    1589 	ld	e, a
-      0005BC 56                    1590 	ld	d, (hl)
-      0005BD F8 08                 1591 	ldhl	sp,	#8
-      0005BF 7E                    1592 	ld	a, (hl)
-      0005C0 12                    1593 	ld	(de), a
-                           0005C1  1594 	C$main.c$272$4_3$192	= .
-                                   1595 	.globl	C$main.c$272$4_3$192
-                                   1596 ;src/main.c:272: prevX = currentX;
-      0005C1 F8 00                 1597 	ldhl	sp,	#0
-      0005C3 7E                    1598 	ld	a, (hl)
-      0005C4 F8 08                 1599 	ldhl	sp,	#8
-      0005C6 77                    1600 	ld	(hl), a
-                           0005C7  1601 	C$main.c$273$4_3$192	= .
-                                   1602 	.globl	C$main.c$273$4_3$192
-                                   1603 ;src/main.c:273: prevY = currentY;
-      0005C7 F8 01                 1604 	ldhl	sp,	#1
-      0005C9 7E                    1605 	ld	a, (hl)
-      0005CA F8 04                 1606 	ldhl	sp,	#4
-      0005CC 77                    1607 	ld	(hl), a
-                           0005CD  1608 	C$main.c$235$3_2$189	= .
-                                   1609 	.globl	C$main.c$235$3_2$189
-                                   1610 ;src/main.c:235: for (int i = 0; i < snake.tailLength; i++)
-      0005CD F8 09                 1611 	ldhl	sp,	#9
-      0005CF 34                    1612 	inc	(hl)
-      0005D0 C2rB4r03              1613 	jp	NZ,00127$
-      0005D3 23                    1614 	inc	hl
-      0005D4 34                    1615 	inc	(hl)
-      0005D5 C3rB4r03              1616 	jp	00127$
-      0005D8                       1617 00129$:
-                           0005D8  1618 	C$main.c$276$1_0$184	= .
-                                   1619 	.globl	C$main.c$276$1_0$184
-                                   1620 ;src/main.c:276: }
-      0005D8 E8 0B                 1621 	add	sp, #11
-                           0005DA  1622 	C$main.c$276$1_0$184	= .
-                                   1623 	.globl	C$main.c$276$1_0$184
-                           0005DA  1624 	XG$moveSnake$0$0	= .
-                                   1625 	.globl	XG$moveSnake$0$0
-      0005DA C9                    1626 	ret
-                           0005DB  1627 	G$collideWIthApple$0$0	= .
-                                   1628 	.globl	G$collideWIthApple$0$0
-                           0005DB  1629 	C$main.c$278$1_0$215	= .
-                                   1630 	.globl	C$main.c$278$1_0$215
-                                   1631 ;src/main.c:278: UINT8 collideWIthApple()
-                                   1632 ;	---------------------------------
-                                   1633 ; Function collideWIthApple
-                                   1634 ; ---------------------------------
-      0005DB                       1635 _collideWIthApple::
-                           0005DB  1636 	C$main.c$280$1_0$215	= .
-                                   1637 	.globl	C$main.c$280$1_0$215
-                                   1638 ;src/main.c:280: return (snake.x == apple.x && snake.y == apple.y);
-      0005DB 21r00r00              1639 	ld	hl, #_snake
-      0005DE 4E                    1640 	ld	c, (hl)
-      0005DF 21r00r00              1641 	ld	hl, #_apple
-      0005E2 46                    1642 	ld	b, (hl)
-      0005E3 79                    1643 	ld	a, c
-      0005E4 90                    1644 	sub	a, b
-      0005E5 20 0C                 1645 	jr	NZ, 00103$
-      0005E7 21r01r00              1646 	ld	hl, #(_snake + 1)
-      0005EA 4E                    1647 	ld	c, (hl)
-      0005EB 21r01r00              1648 	ld	hl, #(_apple + 1)
-      0005EE 46                    1649 	ld	b, (hl)
-      0005EF 79                    1650 	ld	a, c
-      0005F0 90                    1651 	sub	a, b
-      0005F1 28 03                 1652 	jr	Z, 00104$
-      0005F3                       1653 00103$:
-      0005F3 1E 00                 1654 	ld	e, #0x00
-      0005F5 C9                    1655 	ret
-      0005F6                       1656 00104$:
-      0005F6 1E 01                 1657 	ld	e, #0x01
-                           0005F8  1658 	C$main.c$281$1_0$215	= .
-                                   1659 	.globl	C$main.c$281$1_0$215
-                                   1660 ;src/main.c:281: }
-                           0005F8  1661 	C$main.c$281$1_0$215	= .
-                                   1662 	.globl	C$main.c$281$1_0$215
-                           0005F8  1663 	XG$collideWIthApple$0$0	= .
-                                   1664 	.globl	XG$collideWIthApple$0$0
-      0005F8 C9                    1665 	ret
-                           0005F9  1666 	G$adjustSnakeSpeed$0$0	= .
-                                   1667 	.globl	G$adjustSnakeSpeed$0$0
-                           0005F9  1668 	C$main.c$283$1_0$216	= .
-                                   1669 	.globl	C$main.c$283$1_0$216
-                                   1670 ;src/main.c:283: void adjustSnakeSpeed()
-                                   1671 ;	---------------------------------
-                                   1672 ; Function adjustSnakeSpeed
-                                   1673 ; ---------------------------------
-      0005F9                       1674 _adjustSnakeSpeed::
-                           0005F9  1675 	C$main.c$285$1_0$216	= .
-                                   1676 	.globl	C$main.c$285$1_0$216
-                                   1677 ;src/main.c:285: if (appleEatCount >= 5)
-      0005F9 FAr01r00              1678 	ld	a, (#_appleEatCount)
-      0005FC D6 05                 1679 	sub	a, #0x05
-      0005FE D8                    1680 	ret	C
-                           0005FF  1681 	C$main.c$287$2_0$217	= .
-                                   1682 	.globl	C$main.c$287$2_0$217
-                                   1683 ;src/main.c:287: if (currentSpeed <= 4)
-      0005FF 3E 04                 1684 	ld	a, #0x04
-      000601 21r00r00              1685 	ld	hl, #_currentSpeed
-      000604 96                    1686 	sub	a, (hl)
-      000605 38 01                 1687 	jr	C, 00102$
-                           000607  1688 	C$main.c$289$3_0$218	= .
-                                   1689 	.globl	C$main.c$289$3_0$218
-                                   1690 ;src/main.c:289: currentSpeed++;
-      000607 34                    1691 	inc	(hl)
-      000608                       1692 00102$:
-                           000608  1693 	C$main.c$291$2_0$217	= .
-                                   1694 	.globl	C$main.c$291$2_0$217
-                                   1695 ;src/main.c:291: appleEatCount = 0;
-      000608 21r01r00              1696 	ld	hl, #_appleEatCount
-      00060B 36 00                 1697 	ld	(hl), #0x00
-                           00060D  1698 	C$main.c$293$1_0$216	= .
-                                   1699 	.globl	C$main.c$293$1_0$216
-                                   1700 ;src/main.c:293: }
-                           00060D  1701 	C$main.c$293$1_0$216	= .
-                                   1702 	.globl	C$main.c$293$1_0$216
-                           00060D  1703 	XG$adjustSnakeSpeed$0$0	= .
-                                   1704 	.globl	XG$adjustSnakeSpeed$0$0
-      00060D C9                    1705 	ret
-                           00060E  1706 	G$eatAppleIfPossible$0$0	= .
-                                   1707 	.globl	G$eatAppleIfPossible$0$0
-                           00060E  1708 	C$main.c$295$1_0$219	= .
-                                   1709 	.globl	C$main.c$295$1_0$219
-                                   1710 ;src/main.c:295: void eatAppleIfPossible()
-                                   1711 ;	---------------------------------
-                                   1712 ; Function eatAppleIfPossible
-                                   1713 ; ---------------------------------
-      00060E                       1714 _eatAppleIfPossible::
-                           00060E  1715 	C$main.c$298$1_0$219	= .
-                                   1716 	.globl	C$main.c$298$1_0$219
-                                   1717 ;src/main.c:298: if (collideWIthApple() == 1)
-      00060E CDrDBr05              1718 	call	_collideWIthApple
-      000611 1D                    1719 	dec	e
-      000612 C0                    1720 	ret	NZ
-                           000613  1721 	C$main.c$300$2_0$220	= .
-                                   1722 	.globl	C$main.c$300$2_0$220
-                                   1723 ;src/main.c:300: enlargeSnake();
-      000613 CDr00r00              1724 	call	_enlargeSnake
-                           000616  1725 	C$main.c$301$2_0$220	= .
-                                   1726 	.globl	C$main.c$301$2_0$220
-                                   1727 ;src/main.c:301: placeApple();
-      000616 CDr86r00              1728 	call	_placeApple
-                           000619  1729 	C$main.c$302$2_0$220	= .
-                                   1730 	.globl	C$main.c$302$2_0$220
-                                   1731 ;src/main.c:302: appleEatCount++;
-      000619 21r01r00              1732 	ld	hl, #_appleEatCount
-      00061C 34                    1733 	inc	(hl)
-                           00061D  1734 	C$main.c$303$2_0$220	= .
-                                   1735 	.globl	C$main.c$303$2_0$220
-                                   1736 ;src/main.c:303: adjustSnakeSpeed();
-                           00061D  1737 	C$main.c$305$1_0$219	= .
-                                   1738 	.globl	C$main.c$305$1_0$219
-                                   1739 ;src/main.c:305: }
-                           00061D  1740 	C$main.c$305$1_0$219	= .
-                                   1741 	.globl	C$main.c$305$1_0$219
-                           00061D  1742 	XG$eatAppleIfPossible$0$0	= .
-                                   1743 	.globl	XG$eatAppleIfPossible$0$0
-      00061D C3rF9r05              1744 	jp	_adjustSnakeSpeed
-                           000620  1745 	G$main$0$0	= .
-                                   1746 	.globl	G$main$0$0
-                           000620  1747 	C$main.c$307$1_0$222	= .
-                                   1748 	.globl	C$main.c$307$1_0$222
-                                   1749 ;src/main.c:307: void main(void)
-                                   1750 ;	---------------------------------
-                                   1751 ; Function main
-                                   1752 ; ---------------------------------
-      000620                       1753 _main::
-                           000620  1754 	C$main.c$314$1_0$222	= .
-                                   1755 	.globl	C$main.c$314$1_0$222
-                                   1756 ;src/main.c:314: }
-      000620 F3                    1757 	di
-                           000621  1758 	C$main.c$311$2_0$223	= .
-                                   1759 	.globl	C$main.c$311$2_0$223
-                                   1760 ;src/main.c:311: hUGE_init(&ingame_track);
-      000621 11r00r00              1761 	ld	de, #_ingame_track
-      000624 D5                    1762 	push	de
-      000625 CDr00r00              1763 	call	_hUGE_init
-      000628 E1                    1764 	pop	hl
-                           000629  1765 	C$main.c$312$2_0$223	= .
-                                   1766 	.globl	C$main.c$312$2_0$223
-                                   1767 ;src/main.c:312: add_VBL(hUGE_dosound);
-      000629 11r00r00              1768 	ld	de, #_hUGE_dosound
-      00062C D5                    1769 	push	de
-      00062D CDr00r00              1770 	call	_add_VBL
-      000630 E1                    1771 	pop	hl
-                           000631  1772 	C$main.c$313$2_0$223	= .
-                                   1773 	.globl	C$main.c$313$2_0$223
-                                   1774 ;src/main.c:313: enableSound();
-      000631 CDrD3r00              1775 	call	_enableSound
-      000634 FB                    1776 	ei
-                           000635  1777 	C$main.c$316$1_0$222	= .
-                                   1778 	.globl	C$main.c$316$1_0$222
-                                   1779 ;src/main.c:316: set_sprite_data(0, 7u, SimpleSnakeTiles);
-      000635 11r00r00              1780 	ld	de, #_SimpleSnakeTiles
-      000638 D5                    1781 	push	de
-      000639 21 00 07              1782 	ld	hl, #0x700
-      00063C E5                    1783 	push	hl
-      00063D CDr00r00              1784 	call	_set_sprite_data
-      000640 E8 04                 1785 	add	sp, #4
-                           000642  1786 	C$main.c$318$1_0$222	= .
-                                   1787 	.globl	C$main.c$318$1_0$222
-                                   1788 ;src/main.c:318: set_bkg_palette(0, 1u, &palette[0]);
-      000642 11r62r00              1789 	ld	de, #_palette
-      000645 D5                    1790 	push	de
-      000646 AF                    1791 	xor	a, a
-      000647 3C                    1792 	inc	a
-      000648 F5                    1793 	push	af
-      000649 CDr00r00              1794 	call	_set_bkg_palette
-      00064C E8 04                 1795 	add	sp, #4
-                           00064E  1796 	C$main.c$319$1_0$222	= .
-                                   1797 	.globl	C$main.c$319$1_0$222
-                                   1798 ;src/main.c:319: set_sprite_palette(0, 1u, &palette2[0]);
-      00064E 11r6Ar00              1799 	ld	de, #_palette2
-      000651 D5                    1800 	push	de
-      000652 AF                    1801 	xor	a, a
-      000653 3C                    1802 	inc	a
-      000654 F5                    1803 	push	af
-      000655 CDr00r00              1804 	call	_set_sprite_palette
-      000658 E8 04                 1805 	add	sp, #4
-                           00065A  1806 	C$main.c$321$1_0$222	= .
-                                   1807 	.globl	C$main.c$321$1_0$222
-                                   1808 ;src/main.c:321: set_bkg_data(0, 9u, snake_bg_tiles);
-      00065A 11r00r00              1809 	ld	de, #_snake_bg_tiles
-      00065D D5                    1810 	push	de
-      00065E 21 00 09              1811 	ld	hl, #0x900
-      000661 E5                    1812 	push	hl
-      000662 CDr00r00              1813 	call	_set_bkg_data
-      000665 E8 04                 1814 	add	sp, #4
-                           000667  1815 	C$main.c$322$1_0$222	= .
-                                   1816 	.globl	C$main.c$322$1_0$222
-                                   1817 ;src/main.c:322: set_bkg_tiles(0, 0, 20u, 20u, snake_bg_map);
-      000667 11r00r00              1818 	ld	de, #_snake_bg_map
-      00066A D5                    1819 	push	de
-      00066B 21 14 14              1820 	ld	hl, #0x1414
-      00066E E5                    1821 	push	hl
-      00066F AF                    1822 	xor	a, a
-      000670 0F                    1823 	rrca
-      000671 F5                    1824 	push	af
-      000672 CDr00r00              1825 	call	_set_bkg_tiles
-      000675 E8 06                 1826 	add	sp, #6
-                           000677  1827 	C$main.c$324$1_0$222	= .
-                                   1828 	.globl	C$main.c$324$1_0$222
-                                   1829 ;src/main.c:324: startGame();
-      000677 CDrE0r00              1830 	call	_startGame
-                           00067A  1831 	C$main.c$327$1_0$222	= .
-                                   1832 	.globl	C$main.c$327$1_0$222
-                                   1833 ;src/main.c:327: while (1)
-      00067A                       1834 00102$:
-                           00067A  1835 	C$main.c$329$2_0$224	= .
-                                   1836 	.globl	C$main.c$329$2_0$224
-                                   1837 ;src/main.c:329: controls_controller();
-      00067A CDr23r01              1838 	call	_controls_controller
-                           00067D  1839 	C$main.c$331$2_0$224	= .
-                                   1840 	.globl	C$main.c$331$2_0$224
-                                   1841 ;src/main.c:331: eatAppleIfPossible();
-      00067D CDr0Er06              1842 	call	_eatAppleIfPossible
-                           000680  1843 	C$main.c$332$2_0$224	= .
-                                   1844 	.globl	C$main.c$332$2_0$224
-                                   1845 ;src/main.c:332: moveSnake();
-      000680 CDr63r02              1846 	call	_moveSnake
-                           000683  1847 	C$main.c$334$2_0$224	= .
-                                   1848 	.globl	C$main.c$334$2_0$224
-                                   1849 ;src/main.c:334: wait_vbl_done();
-      000683 CDr00r00              1850 	call	_wait_vbl_done
-                           000686  1851 	C$main.c$336$1_0$222	= .
-                                   1852 	.globl	C$main.c$336$1_0$222
-                                   1853 ;src/main.c:336: }
-                           000686  1854 	C$main.c$336$1_0$222	= .
-                                   1855 	.globl	C$main.c$336$1_0$222
-                           000686  1856 	XG$main$0$0	= .
-                                   1857 	.globl	XG$main$0$0
-      000686 18 F2                 1858 	jr	00102$
-                                   1859 	.area _CODE
-                                   1860 	.area _INITIALIZER
-                           000000  1861 Fmain$__xinit_currentSpeed$0_0$0 == .
-      000000                       1862 __xinit__currentSpeed:
-      000000 00                    1863 	.db #0x00	; 0
-                           000001  1864 Fmain$__xinit_appleEatCount$0_0$0 == .
-      000001                       1865 __xinit__appleEatCount:
-      000001 00                    1866 	.db #0x00	; 0
-                           000002  1867 Fmain$__xinit_snakeHeadspriteProp$0_0$0 == .
-      000002                       1868 __xinit__snakeHeadspriteProp:
-      000002 00                    1869 	.db #0x00	; 0
-                           000003  1870 Fmain$__xinit_snakeHeadSpriteIndex$0_0$0 == .
-      000003                       1871 __xinit__snakeHeadSpriteIndex:
-      000003 01                    1872 	.db #0x01	; 1
-                           000004  1873 Fmain$__xinit_lastTime$0_0$0 == .
-      000004                       1874 __xinit__lastTime:
-      000004 00 00                 1875 	.dw #0x0000
-                           000006  1876 Fmain$__xinit_timeCounter$0_0$0 == .
-      000006                       1877 __xinit__timeCounter:
-      000006 00 00                 1878 	.dw #0x0000
-                                   1879 	.area _CABS (ABS)
+                                     81 	.area _CODE
+                           000000    82 	G$initApple$0$0	= .
+                                     83 	.globl	G$initApple$0$0
+                           000000    84 	C$main.c$28$0_0$132	= .
+                                     85 	.globl	C$main.c$28$0_0$132
+                                     86 ;src/main.c:28: void initApple()
+                                     87 ;	---------------------------------
+                                     88 ; Function initApple
+                                     89 ; ---------------------------------
+      000000                         90 _initApple::
+                                     91 ;/opt/gbdk/include/gb/gb.h:1314: shadow_OAM[nb].tile=tile;
+      000000 21r06r00                92 	ld	hl, #(_shadow_OAM + 6)
+      000003 36 03                   93 	ld	(hl), #0x03
+                           000005    94 	C$main.c$30$3_0$132	= .
+                                     95 	.globl	C$main.c$30$3_0$132
+                                     96 ;src/main.c:30: set_sprite_tile(APPLE_VRAM_SPRITE_INDEX, 3u); // 3 => position of apple sprite on vram
+                           000005    97 	C$main.c$31$3_0$132	= .
+                                     98 	.globl	C$main.c$31$3_0$132
+                                     99 ;src/main.c:31: }
+                           000005   100 	C$main.c$31$3_0$132	= .
+                                    101 	.globl	C$main.c$31$3_0$132
+                           000005   102 	XG$initApple$0$0	= .
+                                    103 	.globl	XG$initApple$0$0
+      000005 C9                     104 	ret
+                           000006   105 Fmain$speed$0_0$0 == .
+      000006                        106 _speed:
+      000006                        107 	.ds 14
+                           000014   108 Fmain$palette$0_0$0 == .
+      000014                        109 _palette:
+      000014 FF 7F                  110 	.dw #0x7fff
+      000016 00 00                  111 	.dw #0x0000
+      000018 87 02                  112 	.dw #0x0287
+      00001A 1C 03                  113 	.dw #0x031c
+                           00001C   114 Fmain$palette2$0_0$0 == .
+      00001C                        115 _palette2:
+      00001C BC 17                  116 	.dw #0x17bc
+      00001E E7 22                  117 	.dw #0x22e7
+      000020 C4 19                  118 	.dw #0x19c4
+      000022 1D 00                  119 	.dw #0x001d
+                           000024   120 	G$placeApple$0$0	= .
+                                    121 	.globl	G$placeApple$0$0
+                           000024   122 	C$main.c$33$3_0$136	= .
+                                    123 	.globl	C$main.c$33$3_0$136
+                                    124 ;src/main.c:33: void placeApple()
+                                    125 ;	---------------------------------
+                                    126 ; Function placeApple
+                                    127 ; ---------------------------------
+      000024                        128 _placeApple::
+                           000024   129 	C$main.c$35$1_0$136	= .
+                                    130 	.globl	C$main.c$35$1_0$136
+                                    131 ;src/main.c:35: apple.x = ((abs(rand()) % (12u - 7u)) + 7u) * 8u;
+      000024 CDr00r00               132 	call	_rand
+      000027 7B                     133 	ld	a, e
+      000028 07                     134 	rlca
+      000029 9F                     135 	sbc	a, a
+      00002A 57                     136 	ld	d, a
+      00002B D5                     137 	push	de
+      00002C CDr00r00               138 	call	_abs
+      00002F E1                     139 	pop	hl
+      000030 01 05 00               140 	ld	bc, #0x0005
+      000033 C5                     141 	push	bc
+      000034 D5                     142 	push	de
+      000035 CDr00r00               143 	call	__moduint
+      000038 E8 04                  144 	add	sp, #4
+      00003A 7B                     145 	ld	a, e
+      00003B C6 07                  146 	add	a, #0x07
+      00003D 87                     147 	add	a, a
+      00003E 87                     148 	add	a, a
+      00003F 87                     149 	add	a, a
+      000040 EAr00r00               150 	ld	(#_apple),a
+                           000043   151 	C$main.c$36$1_0$136	= .
+                                    152 	.globl	C$main.c$36$1_0$136
+                                    153 ;src/main.c:36: apple.y = ((abs(rand()) % (15u - 7u)) + 7u) * 8u;
+      000043 CDr00r00               154 	call	_rand
+      000046 7B                     155 	ld	a, e
+      000047 07                     156 	rlca
+      000048 9F                     157 	sbc	a, a
+      000049 57                     158 	ld	d, a
+      00004A D5                     159 	push	de
+      00004B CDr00r00               160 	call	_abs
+      00004E E1                     161 	pop	hl
+      00004F 7B                     162 	ld	a, e
+      000050 E6 07                  163 	and	a, #0x07
+      000052 C6 07                  164 	add	a, #0x07
+      000054 87                     165 	add	a, a
+      000055 87                     166 	add	a, a
+      000056 87                     167 	add	a, a
+      000057 EAr01r00               168 	ld	(#(_apple + 1)),a
+                                    169 ;src/main.c:37: move_sprite(APPLE_VRAM_SPRITE_INDEX, apple.x, apple.y);
+      00005A 47                     170 	ld	b, a
+      00005B 21r00r00               171 	ld	hl, #_apple
+      00005E 4E                     172 	ld	c, (hl)
+                                    173 ;/opt/gbdk/include/gb/gb.h:1387: OAM_item_t * itm = &shadow_OAM[nb];
+      00005F 21r04r00               174 	ld	hl, #(_shadow_OAM + 4)
+                                    175 ;/opt/gbdk/include/gb/gb.h:1388: itm->y=y, itm->x=x;
+      000062 78                     176 	ld	a, b
+      000063 22                     177 	ld	(hl+), a
+      000064 71                     178 	ld	(hl), c
+                           000065   179 	C$main.c$37$3_0$136	= .
+                                    180 	.globl	C$main.c$37$3_0$136
+                                    181 ;src/main.c:37: move_sprite(APPLE_VRAM_SPRITE_INDEX, apple.x, apple.y);
+                           000065   182 	C$main.c$38$3_0$136	= .
+                                    183 	.globl	C$main.c$38$3_0$136
+                                    184 ;src/main.c:38: }
+                           000065   185 	C$main.c$38$3_0$136	= .
+                                    186 	.globl	C$main.c$38$3_0$136
+                           000065   187 	XG$placeApple$0$0	= .
+                                    188 	.globl	XG$placeApple$0$0
+      000065 C9                     189 	ret
+                           000066   190 	G$enableSound$0$0	= .
+                                    191 	.globl	G$enableSound$0$0
+                           000066   192 	C$main.c$40$3_0$140	= .
+                                    193 	.globl	C$main.c$40$3_0$140
+                                    194 ;src/main.c:40: void enableSound()
+                                    195 ;	---------------------------------
+                                    196 ; Function enableSound
+                                    197 ; ---------------------------------
+      000066                        198 _enableSound::
+                           000066   199 	C$main.c$42$1_0$140	= .
+                                    200 	.globl	C$main.c$42$1_0$140
+                                    201 ;src/main.c:42: NR52_REG = 0x80;
+      000066 3E 80                  202 	ld	a, #0x80
+      000068 E0r00                  203 	ldh	(_NR52_REG + 0), a
+                           00006A   204 	C$main.c$43$1_0$140	= .
+                                    205 	.globl	C$main.c$43$1_0$140
+                                    206 ;src/main.c:43: NR51_REG = 0xFF;
+      00006A 3E FF                  207 	ld	a, #0xff
+      00006C E0r00                  208 	ldh	(_NR51_REG + 0), a
+                           00006E   209 	C$main.c$44$1_0$140	= .
+                                    210 	.globl	C$main.c$44$1_0$140
+                                    211 ;src/main.c:44: NR50_REG = 0x77;
+      00006E 3E 77                  212 	ld	a, #0x77
+      000070 E0r00                  213 	ldh	(_NR50_REG + 0), a
+                           000072   214 	C$main.c$45$1_0$140	= .
+                                    215 	.globl	C$main.c$45$1_0$140
+                                    216 ;src/main.c:45: }
+                           000072   217 	C$main.c$45$1_0$140	= .
+                                    218 	.globl	C$main.c$45$1_0$140
+                           000072   219 	XG$enableSound$0$0	= .
+                                    220 	.globl	XG$enableSound$0$0
+      000072 C9                     221 	ret
+                           000073   222 	G$startGame$0$0	= .
+                                    223 	.globl	G$startGame$0$0
+                           000073   224 	C$main.c$47$1_0$141	= .
+                                    225 	.globl	C$main.c$47$1_0$141
+                                    226 ;src/main.c:47: void startGame()
+                                    227 ;	---------------------------------
+                                    228 ; Function startGame
+                                    229 ; ---------------------------------
+      000073                        230 _startGame::
+                           000073   231 	C$main.c$49$1_0$141	= .
+                                    232 	.globl	C$main.c$49$1_0$141
+                                    233 ;src/main.c:49: initrand(clock());
+      000073 CDr00r00               234 	call	_clock
+      000076 D5                     235 	push	de
+      000077 CDr00r00               236 	call	_initrand
+      00007A E1                     237 	pop	hl
+                           00007B   238 	C$main.c$50$1_0$141	= .
+                                    239 	.globl	C$main.c$50$1_0$141
+                                    240 ;src/main.c:50: init_snake();
+      00007B CDr00r00               241 	call	_init_snake
+                           00007E   242 	C$main.c$51$1_0$141	= .
+                                    243 	.globl	C$main.c$51$1_0$141
+                                    244 ;src/main.c:51: initApple();
+      00007E CDr00r00               245 	call	_initApple
+                           000081   246 	C$main.c$52$1_0$141	= .
+                                    247 	.globl	C$main.c$52$1_0$141
+                                    248 ;src/main.c:52: placeApple();
+      000081 CDr24r00               249 	call	_placeApple
+                           000084   250 	C$main.c$53$1_0$141	= .
+                                    251 	.globl	C$main.c$53$1_0$141
+                                    252 ;src/main.c:53: appleEatCount = 0;
+      000084 21r00r00               253 	ld	hl, #_appleEatCount
+      000087 36 00                  254 	ld	(hl), #0x00
+                           000089   255 	C$main.c$54$1_0$141	= .
+                                    256 	.globl	C$main.c$54$1_0$141
+                                    257 ;src/main.c:54: SHOW_BKG;
+      000089 F0r00                  258 	ldh	a, (_LCDC_REG + 0)
+      00008B F6 01                  259 	or	a, #0x01
+      00008D E0r00                  260 	ldh	(_LCDC_REG + 0), a
+                           00008F   261 	C$main.c$55$1_0$141	= .
+                                    262 	.globl	C$main.c$55$1_0$141
+                                    263 ;src/main.c:55: SHOW_SPRITES;
+      00008F F0r00                  264 	ldh	a, (_LCDC_REG + 0)
+      000091 F6 02                  265 	or	a, #0x02
+      000093 E0r00                  266 	ldh	(_LCDC_REG + 0), a
+                           000095   267 	C$main.c$56$1_0$141	= .
+                                    268 	.globl	C$main.c$56$1_0$141
+                                    269 ;src/main.c:56: }
+                           000095   270 	C$main.c$56$1_0$141	= .
+                                    271 	.globl	C$main.c$56$1_0$141
+                           000095   272 	XG$startGame$0$0	= .
+                                    273 	.globl	XG$startGame$0$0
+      000095 C9                     274 	ret
+                           000096   275 	G$check_input$0$0	= .
+                                    276 	.globl	G$check_input$0$0
+                           000096   277 	C$main.c$58$1_0$142	= .
+                                    278 	.globl	C$main.c$58$1_0$142
+                                    279 ;src/main.c:58: void check_input()
+                                    280 ;	---------------------------------
+                                    281 ; Function check_input
+                                    282 ; ---------------------------------
+      000096                        283 _check_input::
+                           000096   284 	C$main.c$60$1_0$142	= .
+                                    285 	.globl	C$main.c$60$1_0$142
+                                    286 ;src/main.c:60: const UINT8 joypadState = joypad();
+      000096 CDr00r00               287 	call	_joypad
+      000099 4B                     288 	ld	c, e
+                           00009A   289 	C$main.c$62$1_0$142	= .
+                                    290 	.globl	C$main.c$62$1_0$142
+                                    291 ;src/main.c:62: if ((joypadState == J_RIGHT) && (snake.direction[1] != 0))
+      00009A 79                     292 	ld	a, c
+      00009B 3D                     293 	dec	a
+      00009C 20 0D                  294 	jr	NZ, 00113$
+      00009E FAr03r00               295 	ld	a, (#(_snake + 3) + 0)
+      0000A1 B7                     296 	or	a, a
+      0000A2 28 07                  297 	jr	Z, 00113$
+                           0000A4   298 	C$main.c$64$2_0$143	= .
+                                    299 	.globl	C$main.c$64$2_0$143
+                                    300 ;src/main.c:64: move_right();
+      0000A4 C5                     301 	push	bc
+      0000A5 CDr00r00               302 	call	_move_right
+      0000A8 C1                     303 	pop	bc
+      0000A9 18 34                  304 	jr	00114$
+      0000AB                        305 00113$:
+                           0000AB   306 	C$main.c$66$1_0$142	= .
+                                    307 	.globl	C$main.c$66$1_0$142
+                                    308 ;src/main.c:66: else if (joypadState == J_DOWN && (snake.direction[0] != 0))
+      0000AB 79                     309 	ld	a, c
+      0000AC D6 08                  310 	sub	a, #0x08
+      0000AE 20 0D                  311 	jr	NZ, 00109$
+      0000B0 FAr02r00               312 	ld	a, (#(_snake + 2) + 0)
+      0000B3 B7                     313 	or	a, a
+      0000B4 28 07                  314 	jr	Z, 00109$
+                           0000B6   315 	C$main.c$68$2_0$144	= .
+                                    316 	.globl	C$main.c$68$2_0$144
+                                    317 ;src/main.c:68: move_down();
+      0000B6 C5                     318 	push	bc
+      0000B7 CDr00r00               319 	call	_move_down
+      0000BA C1                     320 	pop	bc
+      0000BB 18 22                  321 	jr	00114$
+      0000BD                        322 00109$:
+                           0000BD   323 	C$main.c$70$1_0$142	= .
+                                    324 	.globl	C$main.c$70$1_0$142
+                                    325 ;src/main.c:70: else if (joypadState == J_LEFT && (snake.direction[1] != 0))
+      0000BD 79                     326 	ld	a, c
+      0000BE D6 02                  327 	sub	a, #0x02
+      0000C0 20 0D                  328 	jr	NZ, 00105$
+      0000C2 FAr03r00               329 	ld	a, (#(_snake + 3) + 0)
+      0000C5 B7                     330 	or	a, a
+      0000C6 28 07                  331 	jr	Z, 00105$
+                           0000C8   332 	C$main.c$72$2_0$145	= .
+                                    333 	.globl	C$main.c$72$2_0$145
+                                    334 ;src/main.c:72: move_left();
+      0000C8 C5                     335 	push	bc
+      0000C9 CDr00r00               336 	call	_move_left
+      0000CC C1                     337 	pop	bc
+      0000CD 18 10                  338 	jr	00114$
+      0000CF                        339 00105$:
+                           0000CF   340 	C$main.c$74$1_0$142	= .
+                                    341 	.globl	C$main.c$74$1_0$142
+                                    342 ;src/main.c:74: else if (joypadState == J_UP && (snake.direction[0] != 0))
+      0000CF 79                     343 	ld	a, c
+      0000D0 D6 04                  344 	sub	a, #0x04
+      0000D2 20 0B                  345 	jr	NZ, 00114$
+      0000D4 FAr02r00               346 	ld	a, (#(_snake + 2) + 0)
+      0000D7 B7                     347 	or	a, a
+      0000D8 28 05                  348 	jr	Z, 00114$
+                           0000DA   349 	C$main.c$76$2_0$146	= .
+                                    350 	.globl	C$main.c$76$2_0$146
+                                    351 ;src/main.c:76: move_up();
+      0000DA C5                     352 	push	bc
+      0000DB CDr00r00               353 	call	_move_up
+      0000DE C1                     354 	pop	bc
+      0000DF                        355 00114$:
+                           0000DF   356 	C$main.c$78$1_0$142	= .
+                                    357 	.globl	C$main.c$78$1_0$142
+                                    358 ;src/main.c:78: if (joypadState & J_START)
+      0000DF CB 79                  359 	bit	7, c
+                           0000E1   360 	C$main.c$80$2_0$147	= .
+                                    361 	.globl	C$main.c$80$2_0$147
+                                    362 ;src/main.c:80: startGame();
+      0000E1 C2r73r00               363 	jp	NZ,_startGame
+                           0000E4   364 	C$main.c$82$1_0$142	= .
+                                    365 	.globl	C$main.c$82$1_0$142
+                                    366 ;src/main.c:82: }
+                           0000E4   367 	C$main.c$82$1_0$142	= .
+                                    368 	.globl	C$main.c$82$1_0$142
+                           0000E4   369 	XG$check_input$0$0	= .
+                                    370 	.globl	XG$check_input$0$0
+      0000E4 C9                     371 	ret
+                           0000E5   372 	G$gameover$0$0	= .
+                                    373 	.globl	G$gameover$0$0
+                           0000E5   374 	C$main.c$84$1_0$148	= .
+                                    375 	.globl	C$main.c$84$1_0$148
+                                    376 ;src/main.c:84: void gameover()
+                                    377 ;	---------------------------------
+                                    378 ; Function gameover
+                                    379 ; ---------------------------------
+      0000E5                        380 _gameover::
+                           0000E5   381 	C$main.c$87$1_0$148	= .
+                                    382 	.globl	C$main.c$87$1_0$148
+                                    383 ;src/main.c:87: HIDE_SPRITES;
+      0000E5 F0r00                  384 	ldh	a, (_LCDC_REG + 0)
+      0000E7 E6 FD                  385 	and	a, #0xfd
+      0000E9 E0r00                  386 	ldh	(_LCDC_REG + 0), a
+                           0000EB   387 	C$main.c$88$1_0$148	= .
+                                    388 	.globl	C$main.c$88$1_0$148
+                                    389 ;src/main.c:88: }
+                           0000EB   390 	C$main.c$88$1_0$148	= .
+                                    391 	.globl	C$main.c$88$1_0$148
+                           0000EB   392 	XG$gameover$0$0	= .
+                                    393 	.globl	XG$gameover$0$0
+      0000EB C9                     394 	ret
+                           0000EC   395 	G$gameover_if_collide_with_wall$0$0	= .
+                                    396 	.globl	G$gameover_if_collide_with_wall$0$0
+                           0000EC   397 	C$main.c$90$1_0$149	= .
+                                    398 	.globl	C$main.c$90$1_0$149
+                                    399 ;src/main.c:90: void gameover_if_collide_with_wall()
+                                    400 ;	---------------------------------
+                                    401 ; Function gameover_if_collide_with_wall
+                                    402 ; ---------------------------------
+      0000EC                        403 _gameover_if_collide_with_wall::
+                           0000EC   404 	C$main.c$92$1_0$149	= .
+                                    405 	.globl	C$main.c$92$1_0$149
+                                    406 ;src/main.c:92: if (check_collision_with_wall())
+      0000EC CDr00r00               407 	call	_check_collision_with_wall
+      0000EF 7B                     408 	ld	a, e
+      0000F0 B7                     409 	or	a, a
+                           0000F1   410 	C$main.c$94$2_0$150	= .
+                                    411 	.globl	C$main.c$94$2_0$150
+                                    412 ;src/main.c:94: gameover();
+      0000F1 C2rE5r00               413 	jp	NZ,_gameover
+                           0000F4   414 	C$main.c$96$1_0$149	= .
+                                    415 	.globl	C$main.c$96$1_0$149
+                                    416 ;src/main.c:96: }
+                           0000F4   417 	C$main.c$96$1_0$149	= .
+                                    418 	.globl	C$main.c$96$1_0$149
+                           0000F4   419 	XG$gameover_if_collide_with_wall$0$0	= .
+                                    420 	.globl	XG$gameover_if_collide_with_wall$0$0
+      0000F4 C9                     421 	ret
+                           0000F5   422 	G$collideWIthApple$0$0	= .
+                                    423 	.globl	G$collideWIthApple$0$0
+                           0000F5   424 	C$main.c$98$1_0$151	= .
+                                    425 	.globl	C$main.c$98$1_0$151
+                                    426 ;src/main.c:98: UINT8 collideWIthApple()
+                                    427 ;	---------------------------------
+                                    428 ; Function collideWIthApple
+                                    429 ; ---------------------------------
+      0000F5                        430 _collideWIthApple::
+                           0000F5   431 	C$main.c$100$1_0$151	= .
+                                    432 	.globl	C$main.c$100$1_0$151
+                                    433 ;src/main.c:100: return (snake.x == apple.x && snake.y == apple.y);
+      0000F5 21r00r00               434 	ld	hl, #_snake
+      0000F8 4E                     435 	ld	c, (hl)
+      0000F9 21r00r00               436 	ld	hl, #_apple
+      0000FC 46                     437 	ld	b, (hl)
+      0000FD 79                     438 	ld	a, c
+      0000FE 90                     439 	sub	a, b
+      0000FF 20 0C                  440 	jr	NZ, 00103$
+      000101 21r01r00               441 	ld	hl, #(_snake + 1)
+      000104 4E                     442 	ld	c, (hl)
+      000105 21r01r00               443 	ld	hl, #(_apple + 1)
+      000108 46                     444 	ld	b, (hl)
+      000109 79                     445 	ld	a, c
+      00010A 90                     446 	sub	a, b
+      00010B 28 03                  447 	jr	Z, 00104$
+      00010D                        448 00103$:
+      00010D 1E 00                  449 	ld	e, #0x00
+      00010F C9                     450 	ret
+      000110                        451 00104$:
+      000110 1E 01                  452 	ld	e, #0x01
+                           000112   453 	C$main.c$101$1_0$151	= .
+                                    454 	.globl	C$main.c$101$1_0$151
+                                    455 ;src/main.c:101: }
+                           000112   456 	C$main.c$101$1_0$151	= .
+                                    457 	.globl	C$main.c$101$1_0$151
+                           000112   458 	XG$collideWIthApple$0$0	= .
+                                    459 	.globl	XG$collideWIthApple$0$0
+      000112 C9                     460 	ret
+                           000113   461 	G$adjustSnakeSpeed$0$0	= .
+                                    462 	.globl	G$adjustSnakeSpeed$0$0
+                           000113   463 	C$main.c$103$1_0$152	= .
+                                    464 	.globl	C$main.c$103$1_0$152
+                                    465 ;src/main.c:103: void adjustSnakeSpeed()
+                                    466 ;	---------------------------------
+                                    467 ; Function adjustSnakeSpeed
+                                    468 ; ---------------------------------
+      000113                        469 _adjustSnakeSpeed::
+                           000113   470 	C$main.c$105$1_0$152	= .
+                                    471 	.globl	C$main.c$105$1_0$152
+                                    472 ;src/main.c:105: if (appleEatCount >= 5)
+      000113 FAr00r00               473 	ld	a, (#_appleEatCount)
+      000116 D6 05                  474 	sub	a, #0x05
+      000118 D8                     475 	ret	C
+                           000119   476 	C$main.c$107$2_0$153	= .
+                                    477 	.globl	C$main.c$107$2_0$153
+                                    478 ;src/main.c:107: if (snake.currentSpeed <= 4)
+      000119 01r58r00               479 	ld	bc, #_snake+88
+      00011C 0A                     480 	ld	a, (bc)
+      00011D 5F                     481 	ld	e, a
+      00011E 3E 04                  482 	ld	a, #0x04
+      000120 93                     483 	sub	a, e
+      000121 38 03                  484 	jr	C, 00102$
+                           000123   485 	C$main.c$109$3_0$154	= .
+                                    486 	.globl	C$main.c$109$3_0$154
+                                    487 ;src/main.c:109: snake.currentSpeed++;
+      000123 7B                     488 	ld	a, e
+      000124 3C                     489 	inc	a
+      000125 02                     490 	ld	(bc), a
+      000126                        491 00102$:
+                           000126   492 	C$main.c$111$2_0$153	= .
+                                    493 	.globl	C$main.c$111$2_0$153
+                                    494 ;src/main.c:111: appleEatCount = 0;
+      000126 21r00r00               495 	ld	hl, #_appleEatCount
+      000129 36 00                  496 	ld	(hl), #0x00
+                           00012B   497 	C$main.c$113$1_0$152	= .
+                                    498 	.globl	C$main.c$113$1_0$152
+                                    499 ;src/main.c:113: }
+                           00012B   500 	C$main.c$113$1_0$152	= .
+                                    501 	.globl	C$main.c$113$1_0$152
+                           00012B   502 	XG$adjustSnakeSpeed$0$0	= .
+                                    503 	.globl	XG$adjustSnakeSpeed$0$0
+      00012B C9                     504 	ret
+                           00012C   505 	G$eatAppleIfPossible$0$0	= .
+                                    506 	.globl	G$eatAppleIfPossible$0$0
+                           00012C   507 	C$main.c$115$1_0$155	= .
+                                    508 	.globl	C$main.c$115$1_0$155
+                                    509 ;src/main.c:115: void eatAppleIfPossible()
+                                    510 ;	---------------------------------
+                                    511 ; Function eatAppleIfPossible
+                                    512 ; ---------------------------------
+      00012C                        513 _eatAppleIfPossible::
+                           00012C   514 	C$main.c$118$1_0$155	= .
+                                    515 	.globl	C$main.c$118$1_0$155
+                                    516 ;src/main.c:118: if (collideWIthApple() == 1)
+      00012C CDrF5r00               517 	call	_collideWIthApple
+      00012F 1D                     518 	dec	e
+      000130 C0                     519 	ret	NZ
+                           000131   520 	C$main.c$120$2_0$156	= .
+                                    521 	.globl	C$main.c$120$2_0$156
+                                    522 ;src/main.c:120: enlarge_snake();
+      000131 CDr00r00               523 	call	_enlarge_snake
+                           000134   524 	C$main.c$121$2_0$156	= .
+                                    525 	.globl	C$main.c$121$2_0$156
+                                    526 ;src/main.c:121: placeApple();
+      000134 CDr24r00               527 	call	_placeApple
+                           000137   528 	C$main.c$122$2_0$156	= .
+                                    529 	.globl	C$main.c$122$2_0$156
+                                    530 ;src/main.c:122: appleEatCount++;
+      000137 21r00r00               531 	ld	hl, #_appleEatCount
+      00013A 34                     532 	inc	(hl)
+                           00013B   533 	C$main.c$123$2_0$156	= .
+                                    534 	.globl	C$main.c$123$2_0$156
+                                    535 ;src/main.c:123: adjustSnakeSpeed();
+                           00013B   536 	C$main.c$125$1_0$155	= .
+                                    537 	.globl	C$main.c$125$1_0$155
+                                    538 ;src/main.c:125: }
+                           00013B   539 	C$main.c$125$1_0$155	= .
+                                    540 	.globl	C$main.c$125$1_0$155
+                           00013B   541 	XG$eatAppleIfPossible$0$0	= .
+                                    542 	.globl	XG$eatAppleIfPossible$0$0
+      00013B C3r13r01               543 	jp	_adjustSnakeSpeed
+                           00013E   544 	G$main$0$0	= .
+                                    545 	.globl	G$main$0$0
+                           00013E   546 	C$main.c$127$1_0$158	= .
+                                    547 	.globl	C$main.c$127$1_0$158
+                                    548 ;src/main.c:127: void main(void)
+                                    549 ;	---------------------------------
+                                    550 ; Function main
+                                    551 ; ---------------------------------
+      00013E                        552 _main::
+                           00013E   553 	C$main.c$134$1_0$158	= .
+                                    554 	.globl	C$main.c$134$1_0$158
+                                    555 ;src/main.c:134: }
+      00013E F3                     556 	di
+                           00013F   557 	C$main.c$131$2_0$159	= .
+                                    558 	.globl	C$main.c$131$2_0$159
+                                    559 ;src/main.c:131: hUGE_init(&ingame_track);
+      00013F 11r00r00               560 	ld	de, #_ingame_track
+      000142 D5                     561 	push	de
+      000143 CDr00r00               562 	call	_hUGE_init
+      000146 E1                     563 	pop	hl
+                           000147   564 	C$main.c$132$2_0$159	= .
+                                    565 	.globl	C$main.c$132$2_0$159
+                                    566 ;src/main.c:132: add_VBL(hUGE_dosound);
+      000147 11r00r00               567 	ld	de, #_hUGE_dosound
+      00014A D5                     568 	push	de
+      00014B CDr00r00               569 	call	_add_VBL
+      00014E E1                     570 	pop	hl
+                           00014F   571 	C$main.c$133$2_0$159	= .
+                                    572 	.globl	C$main.c$133$2_0$159
+                                    573 ;src/main.c:133: enableSound();
+      00014F CDr66r00               574 	call	_enableSound
+      000152 FB                     575 	ei
+                           000153   576 	C$main.c$136$1_0$158	= .
+                                    577 	.globl	C$main.c$136$1_0$158
+                                    578 ;src/main.c:136: set_sprite_data(0, 7u, SimpleSnakeTiles);
+      000153 11r00r00               579 	ld	de, #_SimpleSnakeTiles
+      000156 D5                     580 	push	de
+      000157 21 00 07               581 	ld	hl, #0x700
+      00015A E5                     582 	push	hl
+      00015B CDr00r00               583 	call	_set_sprite_data
+      00015E E8 04                  584 	add	sp, #4
+                           000160   585 	C$main.c$138$1_0$158	= .
+                                    586 	.globl	C$main.c$138$1_0$158
+                                    587 ;src/main.c:138: set_bkg_palette(0, 1u, &palette[0]);
+      000160 11r14r00               588 	ld	de, #_palette
+      000163 D5                     589 	push	de
+      000164 AF                     590 	xor	a, a
+      000165 3C                     591 	inc	a
+      000166 F5                     592 	push	af
+      000167 CDr00r00               593 	call	_set_bkg_palette
+      00016A E8 04                  594 	add	sp, #4
+                           00016C   595 	C$main.c$139$1_0$158	= .
+                                    596 	.globl	C$main.c$139$1_0$158
+                                    597 ;src/main.c:139: set_sprite_palette(0, 1u, &palette2[0]);
+      00016C 11r1Cr00               598 	ld	de, #_palette2
+      00016F D5                     599 	push	de
+      000170 AF                     600 	xor	a, a
+      000171 3C                     601 	inc	a
+      000172 F5                     602 	push	af
+      000173 CDr00r00               603 	call	_set_sprite_palette
+      000176 E8 04                  604 	add	sp, #4
+                           000178   605 	C$main.c$141$1_0$158	= .
+                                    606 	.globl	C$main.c$141$1_0$158
+                                    607 ;src/main.c:141: set_bkg_data(0, 9u, snake_bg_tiles);
+      000178 11r00r00               608 	ld	de, #_snake_bg_tiles
+      00017B D5                     609 	push	de
+      00017C 21 00 09               610 	ld	hl, #0x900
+      00017F E5                     611 	push	hl
+      000180 CDr00r00               612 	call	_set_bkg_data
+      000183 E8 04                  613 	add	sp, #4
+                           000185   614 	C$main.c$142$1_0$158	= .
+                                    615 	.globl	C$main.c$142$1_0$158
+                                    616 ;src/main.c:142: set_bkg_tiles(0, 0, 20u, 20u, snake_bg_map);
+      000185 11r00r00               617 	ld	de, #_snake_bg_map
+      000188 D5                     618 	push	de
+      000189 21 14 14               619 	ld	hl, #0x1414
+      00018C E5                     620 	push	hl
+      00018D AF                     621 	xor	a, a
+      00018E 0F                     622 	rrca
+      00018F F5                     623 	push	af
+      000190 CDr00r00               624 	call	_set_bkg_tiles
+      000193 E8 06                  625 	add	sp, #6
+                           000195   626 	C$main.c$144$1_0$158	= .
+                                    627 	.globl	C$main.c$144$1_0$158
+                                    628 ;src/main.c:144: startGame();
+      000195 CDr73r00               629 	call	_startGame
+                           000198   630 	C$main.c$147$1_0$158	= .
+                                    631 	.globl	C$main.c$147$1_0$158
+                                    632 ;src/main.c:147: while (1)
+      000198                        633 00102$:
+                           000198   634 	C$main.c$149$2_0$160	= .
+                                    635 	.globl	C$main.c$149$2_0$160
+                                    636 ;src/main.c:149: check_input();
+      000198 CDr96r00               637 	call	_check_input
+                           00019B   638 	C$main.c$151$2_0$160	= .
+                                    639 	.globl	C$main.c$151$2_0$160
+                                    640 ;src/main.c:151: eatAppleIfPossible();
+      00019B CDr2Cr01               641 	call	_eatAppleIfPossible
+                           00019E   642 	C$main.c$152$2_0$160	= .
+                                    643 	.globl	C$main.c$152$2_0$160
+                                    644 ;src/main.c:152: move_snake();
+      00019E CDr00r00               645 	call	_move_snake
+                           0001A1   646 	C$main.c$153$2_0$160	= .
+                                    647 	.globl	C$main.c$153$2_0$160
+                                    648 ;src/main.c:153: gameover_if_collide_with_wall();
+      0001A1 CDrECr00               649 	call	_gameover_if_collide_with_wall
+                           0001A4   650 	C$main.c$155$2_0$160	= .
+                                    651 	.globl	C$main.c$155$2_0$160
+                                    652 ;src/main.c:155: wait_vbl_done();
+      0001A4 CDr00r00               653 	call	_wait_vbl_done
+                           0001A7   654 	C$main.c$157$1_0$158	= .
+                                    655 	.globl	C$main.c$157$1_0$158
+                                    656 ;src/main.c:157: }
+                           0001A7   657 	C$main.c$157$1_0$158	= .
+                                    658 	.globl	C$main.c$157$1_0$158
+                           0001A7   659 	XG$main$0$0	= .
+                                    660 	.globl	XG$main$0$0
+      0001A7 18 EF                  661 	jr	00102$
+                                    662 	.area _CODE
+                                    663 	.area _INITIALIZER
+                           000000   664 Fmain$__xinit_appleEatCount$0_0$0 == .
+      000000                        665 __xinit__appleEatCount:
+      000000 00                     666 	.db #0x00	; 0
+                                    667 	.area _CABS (ABS)
