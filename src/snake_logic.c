@@ -61,6 +61,11 @@ BOOLEAN check_collision_with_wall()
     return nextTileIndex >= 1u && nextTileIndex <= 9u;
 }
 
+BOOLEAN check_collision_with_tail(uint8_t *x, uint8_t *y)
+{
+    return snake.x == *x && snake.y == *y;
+}
+
 BOOLEAN is_snake_moving_up()
 {
     return snake.direction[1] == -1 * SNAKE_MOVEMENT_STEP;
@@ -173,7 +178,7 @@ void move_snake()
             uint8_t currentX = snake.tail[i].x;
             uint8_t currentY = snake.tail[i].y;
 
-            if (currentX == snake.x && currentY == snake.y)
+            if (check_collision_with_tail(&currentX, &currentY))
             {
                 gameover();
             }

@@ -46,6 +46,7 @@ void move_up();
 void move_down();
 uint8_t get_bg_tile_index_front_of_snake();
 BOOLEAN check_collision_with_wall();
+BOOLEAN check_collision_with_tail(uint8_t *x, uint8_t *y);
 BOOLEAN is_snake_moving_up();
 BOOLEAN is_snake_moving_left();
 

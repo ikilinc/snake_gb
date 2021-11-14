@@ -6,15 +6,13 @@
 #include <time.h>
 #include <rand.h>
 #include <gbdk/font.h>
-#include "/opt/hugeDriver/include/hUGEDriver.h"
 #include "../res/simple_snake_tiles.h"
 #include "../res/snake_bg_tiles.h"
 #include "../res/snake_bg.h"
 #include "snake_logic.h"
+#include "game_music.h"
 
 #define APPLE_VRAM_SPRITE_INDEX 1u
-
-extern const hUGESong_t ingame_track;
 
 static const uint16_t palette[] = {
     snake_bg_tilesCGBPal0c0, snake_bg_tilesCGBPal0c1, snake_bg_tilesCGBPal0c2, snake_bg_tilesCGBPal0c3};
@@ -35,13 +33,6 @@ void placeApple()
     apple.x = ((abs(rand()) % (12u - 7u)) + 7u) * 8u;
     apple.y = ((abs(rand()) % (15u - 7u)) + 7u) * 8u;
     move_sprite(APPLE_VRAM_SPRITE_INDEX, apple.x, apple.y);
-}
-
-void enableSound()
-{
-    NR52_REG = 0x80;
-    NR51_REG = 0xFF;
-    NR50_REG = 0x77;
 }
 
 void startGame()
@@ -84,6 +75,7 @@ void check_input()
 void gameover()
 {
     // printf("GAME OVER");
+    stopPlayingMusic();
     HIDE_SPRITES;
 }
 
@@ -126,12 +118,8 @@ void eatAppleIfPossible()
 
 void main(void)
 {
-    __critical
-    {
-        hUGE_init(&ingame_track);
-        add_VBL(hUGE_dosound);
-        enableSound();
-    }
+    playLevel1Music();
+    enableSound();
 
     set_sprite_data(0, 7u, SimpleSnakeTiles);
     // Load Background tiles and then map

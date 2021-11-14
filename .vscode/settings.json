@@ -13,7 +13,8 @@
         "font.h": "c",
         "stddef.h": "c",
         "drawing.h": "c",
-        "types.h": "c"
+        "types.h": "c",
+        "game_music.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }
