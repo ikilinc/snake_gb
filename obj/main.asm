@@ -283,7 +283,7 @@ _startGame::
 _check_input::
 	C$main.c$60$1_0$142	= .
 	.globl	C$main.c$60$1_0$142
-;src/main.c:60: const UINT8 joypadState = joypad();
+;src/main.c:60: const uint8_t joypadState = joypad();
 	call	_joypad
 	ld	c, e
 	C$main.c$62$1_0$142	= .
@@ -423,7 +423,7 @@ _gameover_if_collide_with_wall::
 	.globl	G$collideWIthApple$0$0
 	C$main.c$98$1_0$151	= .
 	.globl	C$main.c$98$1_0$151
-;src/main.c:98: UINT8 collideWIthApple()
+;src/main.c:98: uint8_t collideWIthApple()
 ;	---------------------------------
 ; Function collideWIthApple
 ; ---------------------------------

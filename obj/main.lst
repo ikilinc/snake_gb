@@ -283,7 +283,7 @@
       000096                        283 _check_input::
                            000096   284 	C$main.c$60$1_0$142	= .
                                     285 	.globl	C$main.c$60$1_0$142
-                                    286 ;src/main.c:60: const UINT8 joypadState = joypad();
+                                    286 ;src/main.c:60: const uint8_t joypadState = joypad();
       000096 CDr00r00               287 	call	_joypad
       000099 4B                     288 	ld	c, e
                            00009A   289 	C$main.c$62$1_0$142	= .
@@ -423,7 +423,7 @@
                                     423 	.globl	G$collideWIthApple$0$0
                            0000F5   424 	C$main.c$98$1_0$151	= .
                                     425 	.globl	C$main.c$98$1_0$151
-                                    426 ;src/main.c:98: UINT8 collideWIthApple()
+                                    426 ;src/main.c:98: uint8_t collideWIthApple()
                                     427 ;	---------------------------------
                                     428 ; Function collideWIthApple
                                     429 ; ---------------------------------

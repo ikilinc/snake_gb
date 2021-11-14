@@ -526,7 +526,7 @@
       000163 3B                     526 	dec	sp
                            000164   527 	C$snake_logic.c$76$1_0$110	= .
                                     528 	.globl	C$snake_logic.c$76$1_0$110
-                                    529 ;src/snake_logic.c:76: UINT8 *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
+                                    529 ;src/snake_logic.c:76: uint8_t *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
       000164 FAr00r00               530 	ld	a, (#_snake + 0)
       000167 4F                     531 	ld	c, a
       000168 06 00                  532 	ld	b, #0x00
@@ -658,7 +658,7 @@
       0001E0 3B                     658 	dec	sp
                            0001E1   659 	C$snake_logic.c$94$1_0$113	= .
                                     660 	.globl	C$snake_logic.c$94$1_0$113
-                                    661 ;src/snake_logic.c:94: UINT8 *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
+                                    661 ;src/snake_logic.c:94: uint8_t *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
       0001E1 FAr00r00               662 	ld	a, (#_snake + 0)
       0001E4 4F                     663 	ld	c, a
       0001E5 06 00                  664 	ld	b, #0x00
@@ -773,7 +773,7 @@
       00024F 3B                     773 	dec	sp
                            000250   774 	C$snake_logic.c$110$1_0$116	= .
                                     775 	.globl	C$snake_logic.c$110$1_0$116
-                                    776 ;src/snake_logic.c:110: UINT8 *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
+                                    776 ;src/snake_logic.c:110: uint8_t *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
       000250 FAr00r00               777 	ld	a, (#_snake + 0)
       000253 4F                     778 	ld	c, a
       000254 06 00                  779 	ld	b, #0x00
@@ -898,7 +898,7 @@
       0002C5 3B                     898 	dec	sp
                            0002C6   899 	C$snake_logic.c$127$1_0$119	= .
                                     900 	.globl	C$snake_logic.c$127$1_0$119
-                                    901 ;src/snake_logic.c:127: UINT8 *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
+                                    901 ;src/snake_logic.c:127: uint8_t *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
       0002C6 FAr00r00               902 	ld	a, (#_snake + 0)
       0002C9 4F                     903 	ld	c, a
       0002CA 06 00                  904 	ld	b, #0x00
@@ -1033,7 +1033,7 @@
       000343 CDr00r00              1033 	call	_clock
                            000346  1034 	C$snake_logic.c$149$1_0$122	= .
                                    1035 	.globl	C$snake_logic.c$149$1_0$122
-                                   1036 ;src/snake_logic.c:149: UINT16 deltaTime = clockValue - lastTime;
+                                   1036 ;src/snake_logic.c:149: uint16_t deltaTime = clockValue - lastTime;
       000346 7B                    1037 	ld	a, e
       000347 21r00r00              1038 	ld	hl, #_lastTime
       00034A 96                    1039 	sub	a, (hl)
@@ -1091,14 +1091,14 @@
       00037B 77                    1091 	ld	(hl), a
                            00037C  1092 	C$snake_logic.c$157$2_1$124	= .
                                    1093 	.globl	C$snake_logic.c$157$2_1$124
-                                   1094 ;src/snake_logic.c:157: UINT8 prevX = snake.x;
+                                   1094 ;src/snake_logic.c:157: uint8_t prevX = snake.x;
       00037C 21r00r00              1095 	ld	hl, #_snake
       00037F 4E                    1096 	ld	c, (hl)
       000380 F8 08                 1097 	ldhl	sp,	#8
       000382 71                    1098 	ld	(hl), c
                            000383  1099 	C$snake_logic.c$158$2_1$124	= .
                                    1100 	.globl	C$snake_logic.c$158$2_1$124
-                                   1101 ;src/snake_logic.c:158: UINT8 prevY = snake.y;
+                                   1101 ;src/snake_logic.c:158: uint8_t prevY = snake.y;
       000383 FAr01r00              1102 	ld	a, (#(_snake + 1) + 0)
       000386 F8 04                 1103 	ldhl	sp,	#4
       000388 77                    1104 	ld	(hl), a
@@ -1251,7 +1251,7 @@
       000445 D2r4Br06              1251 	jp	NC, 00126$
                            000448  1252 	C$snake_logic.c$173$1_0$122	= .
                                    1253 	.globl	C$snake_logic.c$173$1_0$122
-                                   1254 ;src/snake_logic.c:173: UINT8 currentX = snake.tail[i].x;
+                                   1254 ;src/snake_logic.c:173: uint8_t currentX = snake.tail[i].x;
       000448 F8 09                 1255 	ldhl	sp,	#9
       00044A 2A                    1256 	ld	a, (hl+)
       00044B 46                    1257 	ld	b, (hl)
@@ -1267,7 +1267,7 @@
       000459 77                    1267 	ld	(hl), a
                            00045A  1268 	C$snake_logic.c$174$1_0$122	= .
                                    1269 	.globl	C$snake_logic.c$174$1_0$122
-                                   1270 ;src/snake_logic.c:174: UINT8 currentY = snake.tail[i].y;
+                                   1270 ;src/snake_logic.c:174: uint8_t currentY = snake.tail[i].y;
       00045A 69                    1271 	ld	l, c
       00045B 60                    1272 	ld	h, b
       00045C 23                    1273 	inc	hl
@@ -1331,7 +1331,7 @@
       00049B 12                    1331 	ld	(de), a
                            00049C  1332 	C$snake_logic.c$184$4_2$128	= .
                                    1333 	.globl	C$snake_logic.c$184$4_2$128
-                                   1334 ;src/snake_logic.c:184: UINT8 tail_sprite_prop = turnaraoundMap[snake.tail[i].x / 8][snake.tail[i].y / 8];
+                                   1334 ;src/snake_logic.c:184: uint8_t tail_sprite_prop = turnaraoundMap[snake.tail[i].x / 8][snake.tail[i].y / 8];
       00049C F8 08                 1335 	ldhl	sp,	#8
       00049E 7E                    1336 	ld	a, (hl)
       00049F F8 03                 1337 	ldhl	sp,	#3
@@ -1422,7 +1422,7 @@
       00050E 77                    1422 	ld	(hl), a
                            00050F  1423 	C$snake_logic.c$185$4_2$128	= .
                                    1424 	.globl	C$snake_logic.c$185$4_2$128
-                                   1425 ;src/snake_logic.c:185: UINT8 spriteToUse = 2u;
+                                   1425 ;src/snake_logic.c:185: uint8_t spriteToUse = 2u;
       00050F F8 03                 1426 	ldhl	sp,	#3
                            000511  1427 	C$snake_logic.c$186$4_2$128	= .
                                    1428 	.globl	C$snake_logic.c$186$4_2$128

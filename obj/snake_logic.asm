@@ -526,7 +526,7 @@ _move_right::
 	dec	sp
 	C$snake_logic.c$76$1_0$110	= .
 	.globl	C$snake_logic.c$76$1_0$110
-;src/snake_logic.c:76: UINT8 *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
+;src/snake_logic.c:76: uint8_t *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
 	ld	a, (#_snake + 0)
 	ld	c, a
 	ld	b, #0x00
@@ -658,7 +658,7 @@ _move_left::
 	dec	sp
 	C$snake_logic.c$94$1_0$113	= .
 	.globl	C$snake_logic.c$94$1_0$113
-;src/snake_logic.c:94: UINT8 *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
+;src/snake_logic.c:94: uint8_t *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
 	ld	a, (#_snake + 0)
 	ld	c, a
 	ld	b, #0x00
@@ -773,7 +773,7 @@ _move_up::
 	dec	sp
 	C$snake_logic.c$110$1_0$116	= .
 	.globl	C$snake_logic.c$110$1_0$116
-;src/snake_logic.c:110: UINT8 *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
+;src/snake_logic.c:110: uint8_t *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
 	ld	a, (#_snake + 0)
 	ld	c, a
 	ld	b, #0x00
@@ -898,7 +898,7 @@ _move_down::
 	dec	sp
 	C$snake_logic.c$127$1_0$119	= .
 	.globl	C$snake_logic.c$127$1_0$119
-;src/snake_logic.c:127: UINT8 *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
+;src/snake_logic.c:127: uint8_t *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
 	ld	a, (#_snake + 0)
 	ld	c, a
 	ld	b, #0x00
@@ -1033,7 +1033,7 @@ _move_snake::
 	call	_clock
 	C$snake_logic.c$149$1_0$122	= .
 	.globl	C$snake_logic.c$149$1_0$122
-;src/snake_logic.c:149: UINT16 deltaTime = clockValue - lastTime;
+;src/snake_logic.c:149: uint16_t deltaTime = clockValue - lastTime;
 	ld	a, e
 	ld	hl, #_lastTime
 	sub	a, (hl)
@@ -1091,14 +1091,14 @@ _move_snake::
 	ld	(hl), a
 	C$snake_logic.c$157$2_1$124	= .
 	.globl	C$snake_logic.c$157$2_1$124
-;src/snake_logic.c:157: UINT8 prevX = snake.x;
+;src/snake_logic.c:157: uint8_t prevX = snake.x;
 	ld	hl, #_snake
 	ld	c, (hl)
 	ldhl	sp,	#8
 	ld	(hl), c
 	C$snake_logic.c$158$2_1$124	= .
 	.globl	C$snake_logic.c$158$2_1$124
-;src/snake_logic.c:158: UINT8 prevY = snake.y;
+;src/snake_logic.c:158: uint8_t prevY = snake.y;
 	ld	a, (#(_snake + 1) + 0)
 	ldhl	sp,	#4
 	ld	(hl), a
@@ -1251,7 +1251,7 @@ _move_snake::
 	jp	NC, 00126$
 	C$snake_logic.c$173$1_0$122	= .
 	.globl	C$snake_logic.c$173$1_0$122
-;src/snake_logic.c:173: UINT8 currentX = snake.tail[i].x;
+;src/snake_logic.c:173: uint8_t currentX = snake.tail[i].x;
 	ldhl	sp,	#9
 	ld	a, (hl+)
 	ld	b, (hl)
@@ -1267,7 +1267,7 @@ _move_snake::
 	ld	(hl), a
 	C$snake_logic.c$174$1_0$122	= .
 	.globl	C$snake_logic.c$174$1_0$122
-;src/snake_logic.c:174: UINT8 currentY = snake.tail[i].y;
+;src/snake_logic.c:174: uint8_t currentY = snake.tail[i].y;
 	ld	l, c
 	ld	h, b
 	inc	hl
@@ -1331,7 +1331,7 @@ _move_snake::
 	ld	(de), a
 	C$snake_logic.c$184$4_2$128	= .
 	.globl	C$snake_logic.c$184$4_2$128
-;src/snake_logic.c:184: UINT8 tail_sprite_prop = turnaraoundMap[snake.tail[i].x / 8][snake.tail[i].y / 8];
+;src/snake_logic.c:184: uint8_t tail_sprite_prop = turnaraoundMap[snake.tail[i].x / 8][snake.tail[i].y / 8];
 	ldhl	sp,	#8
 	ld	a, (hl)
 	ldhl	sp,	#3
@@ -1422,7 +1422,7 @@ _move_snake::
 	ld	(hl), a
 	C$snake_logic.c$185$4_2$128	= .
 	.globl	C$snake_logic.c$185$4_2$128
-;src/snake_logic.c:185: UINT8 spriteToUse = 2u;
+;src/snake_logic.c:185: uint8_t spriteToUse = 2u;
 	ldhl	sp,	#3
 	C$snake_logic.c$186$4_2$128	= .
 	.globl	C$snake_logic.c$186$4_2$128

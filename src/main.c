@@ -23,7 +23,7 @@ static const uint16_t palette2[] = {
     snake_bg_tilesCGBPal1c0, snake_bg_tilesCGBPal1c1, snake_bg_tilesCGBPal1c2, snake_bg_tilesCGBPal1c3};
 
 Point apple;
-static UINT8 appleEatCount = 0;
+static uint8_t appleEatCount = 0;
 
 void initApple()
 {
@@ -57,7 +57,7 @@ void startGame()
 
 void check_input()
 {
-    const UINT8 joypadState = joypad();
+    const uint8_t joypadState = joypad();
 
     if ((joypadState == J_RIGHT) && (snake.direction[1] != 0))
     {
@@ -95,7 +95,7 @@ void gameover_if_collide_with_wall()
     }
 }
 
-UINT8 collideWIthApple()
+uint8_t collideWIthApple()
 {
     return (snake.x == apple.x && snake.y == apple.y);
 }

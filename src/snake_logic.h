@@ -17,24 +17,24 @@
 
 typedef struct Point
 {
-    UINT8 x, y;
+    uint8_t x, y;
 } Point;
 
 typedef struct Snake
 {
-    UINT8 x, y;
-    INT8 direction[2]; // [x , y];
+    uint8_t x, y;
+    int8_t direction[2]; // [x , y];
     Point tail[40];
-    UINT8 lastUsedTailIndex;
-    UINT8 tailLength;
-    UINT8 snakeHeadspriteProp;
-    UINT8 snakeHeadSpriteIndex;
-    UINT8 currentSpeed;
+    uint8_t lastUsedTailIndex;
+    uint8_t tailLength;
+    uint8_t snakeHeadspriteProp;
+    uint8_t snakeHeadSpriteIndex;
+    uint8_t currentSpeed;
 } Snake;
 
-static const UINT16 speed[7];
+static const uint16_t speed[7];
 extern Snake snake;
-extern UINT8 turnaraoundMap[25][25];
+extern uint8_t turnaraoundMap[25][25];
 
 void init_snake();
 void enlarge_snake();
@@ -44,7 +44,7 @@ void move_right();
 void move_left();
 void move_up();
 void move_down();
-UINT8 get_bg_tile_index_front_of_snake();
+uint8_t get_bg_tile_index_front_of_snake();
 BOOLEAN check_collision_with_wall();
 BOOLEAN is_snake_moving_up();
 BOOLEAN is_snake_moving_left();

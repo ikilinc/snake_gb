@@ -1,8 +1,8 @@
 #include "snake_logic.h"
 
 Snake snake;
-UINT8 turnaraoundMap[25][25];
-static const UINT16 speed[] = {10u, 9u, 8u, 6u, 4u, 2U, 1U};
+uint8_t turnaraoundMap[25][25];
+static const uint16_t speed[] = {10u, 9u, 8u, 6u, 4u, 2U, 1U};
 
 void init_snake()
 {
@@ -73,7 +73,7 @@ BOOLEAN is_snake_moving_left()
 
 void move_right()
 {
-    UINT8 *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
+    uint8_t *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
     reset_snake_head_props();
     snake.snakeHeadspriteProp += HORIZONTAL_FLIP;
     snake.snakeHeadSpriteIndex = 1u;
@@ -91,7 +91,7 @@ void move_right()
 }
 void move_left()
 {
-    UINT8 *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
+    uint8_t *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
     reset_snake_head_props();
     if (is_snake_moving_up())
     {
@@ -107,7 +107,7 @@ void move_left()
 }
 void move_up()
 {
-    UINT8 *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
+    uint8_t *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
     reset_snake_head_props();
     snake.snakeHeadSpriteIndex = 5u;
     if (is_snake_moving_left())
@@ -124,7 +124,7 @@ void move_up()
 }
 void move_down()
 {
-    UINT8 *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
+    uint8_t *turnaraoundMapValue = &turnaraoundMap[snake.x / 8][snake.y / 8];
     reset_snake_head_props();
     snake.snakeHeadspriteProp += VERTICAL_FLIP;
     snake.snakeHeadSpriteIndex = 5u;
@@ -141,12 +141,12 @@ void move_down()
     snake.direction[1] = 1 * SNAKE_MOVEMENT_STEP;
 }
 
-UINT16 lastTime = 0;
-UINT16 timeCounter = 0;
+uint16_t lastTime = 0;
+uint16_t timeCounter = 0;
 void move_snake()
 {
     time_t clockValue = clock();
-    UINT16 deltaTime = clockValue - lastTime;
+    uint16_t deltaTime = clockValue - lastTime;
     lastTime = clockValue;
     timeCounter += deltaTime;
 
@@ -154,8 +154,8 @@ void move_snake()
     {
         timeCounter = 0;
 
-        UINT8 prevX = snake.x;
-        UINT8 prevY = snake.y;
+        uint8_t prevX = snake.x;
+        uint8_t prevY = snake.y;
 
         snake.x += snake.direction[0];
         snake.y += snake.direction[1];
@@ -170,8 +170,8 @@ void move_snake()
         // this have to optimized
         for (int i = 0; i < snake.tailLength; i++)
         {
-            UINT8 currentX = snake.tail[i].x;
-            UINT8 currentY = snake.tail[i].y;
+            uint8_t currentX = snake.tail[i].x;
+            uint8_t currentY = snake.tail[i].y;
 
             if (currentX == snake.x && currentY == snake.y)
             {
@@ -181,8 +181,8 @@ void move_snake()
             snake.tail[i].x = prevX;
             snake.tail[i].y = prevY;
 
-            UINT8 tail_sprite_prop = turnaraoundMap[snake.tail[i].x / 8][snake.tail[i].y / 8];
-            UINT8 spriteToUse = 2u;
+            uint8_t tail_sprite_prop = turnaraoundMap[snake.tail[i].x / 8][snake.tail[i].y / 8];
+            uint8_t spriteToUse = 2u;
             if (tail_sprite_prop != 0)
             {
                 spriteToUse = 4u;
